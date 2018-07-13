@@ -1,9 +1,11 @@
 'use strict';
 
 const webpack = require('webpack');
-const DEV_ENV = true;
+const mode = 'development';
+const DEV_ENV = (mode == 'development') ? true : false;
 
 module.exports = {
+	mode: mode,
 	entry: {
 		app: './js/app.js'
 	},
@@ -24,7 +26,7 @@ module.exports = {
  	],
 
 	module : {
-		loaders: [{
+		rules: [{
 			test: /\.js$/,
 			loader: 'babel-loader',
 			exclude: [/node_modules/],
