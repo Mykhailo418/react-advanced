@@ -2,12 +2,12 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import reducers from './reducers';
 import thunk from "redux-thunk";
 import logger from 'redux-logger'
-import {routerMiddleware} from 'react-router-redux';
+import { connectRouter, routerMiddleware } from 'connected-react-router'
 import history from '../history';
 
-const enhancer = applyMiddleware(routerMiddleware(history),thunk,logger);
+const enhancer = applyMiddleware(thunk, routerMiddleware(history), logger);
 
-const store = createStore(reducers,{},enhancer);
+const store = createStore(connectRouter(history)(reducers), enhancer)
 
 // dev only
 if(DEV_ENV){
