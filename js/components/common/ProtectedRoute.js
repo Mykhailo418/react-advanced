@@ -1,24 +1,27 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
-import { isAuthorizedSelector } from '../../widgets/auth';
+import { isAuthorizedSelector, moduleName } from '../../widgets/auth';
 import NotAuthorized from '../routes/NotAuthorized';
+import Loading from './Loading';
 
 class ProtectedRoute extends Component {
   render() {
-    const { isAuthorized, component, ...rest } = this.props
+    const { isAuthorized, component, isLoading, ...rest } = this.props
     return <Route {...rest} render={this.getComponent} />
   }
 
   getComponent = () => {
-    const { isAuthorized, ...rest } = this.props;
+    const { isAuthorized, isLoading, ...rest } = this.props;
+    if(isLoading) return <Loading />;
     return isAuthorized ? <Route {...rest} /> : <NotAuthorized></NotAuthorized>;
   }
 }
 
 function mapToProps(state){
   return {
-    isAuthorized: isAuthorizedSelector(state)
+    isAuthorized: isAuthorizedSelector(state),
+    isLoading: state[moduleName].loading
   };
 }
 

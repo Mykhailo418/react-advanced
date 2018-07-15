@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { reduxForm, Field } from 'redux-form';
 import ErrorField from '../common/ErrorField';
 
-class SignUpForm extends Component{
+class AddPersonForm extends Component{
 	static propTypes = {
 		handleSubmit: PropTypes.func
 	}
@@ -11,10 +11,11 @@ class SignUpForm extends Component{
 	render(){
 		return(
 			<Fragment>
-				<h2>Sign Up Form</h2>
+				<h2>Add Person</h2>
 				<form onSubmit={this.props.handleSubmit}>
-					<Field label="Email" name="email" component={ErrorField} idField="signUpEmail" />
-					<Field label="Password" name="password" type="password" component={ErrorField} idField="signUpPass" />
+					<Field label="First Name:" name="fname" component={ErrorField} idField="firstNamePerson" />
+					<Field label="Last Name:" name="lname" component={ErrorField} idField="lastNamePerson" />
+					<Field label="Email:" name="email" component={ErrorField} idField="emailPerson" />
 					<button type="submit" className="btn btn-primary">Submit</button>
 				</form>
 			</Fragment>
@@ -22,17 +23,20 @@ class SignUpForm extends Component{
 	}
 }
 
-const validate = ({ email, password }) => {
+const validate = ({fname, lname, email}) => {
 	const emailExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   	const errors = {};
 
   	if (!email) errors.email = 'email is a required field';
  	else if (!emailExp.test(email)) errors.email = 'email is invalid';
 
-  	if (!password) errors.password = 'password is a required field';
-  	else if (password.length < 8) errors.password = 'password is too short';
+  	if (!fname) errors.fname = 'First Name is a required field';
+  	else if (fname.length < 2) errors.fname = 'First Name is too short';
+
+  	if (!lname) errors.lname = 'Last Name is a required field';
+  	else if (lname.length < 2) errors.lname = 'Last Name is too short';
 
   	return errors;
 }
 
-export default reduxForm({ form:'auth', validate})(SignUpForm);
+export default reduxForm({ form:'people', validate})(AddPersonForm);

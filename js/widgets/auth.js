@@ -16,7 +16,8 @@ export const isAuthorizedSelector = (state) => !!state[moduleName].user;
 
 // Reducer
 export const ReducerRecord = Record({
-  user: null
+  user: null,
+  loading: true
 });
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -25,12 +26,14 @@ export default function reducer(state = new ReducerRecord(), action) {
   switch (type) {
   	case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
-      	return state.set('user', payload.user);
+      	return state
+                .set('user', payload.user)
+                .set('loading', false);
 
     case SIGN_IN_ERROR:
     case SIGN_IN_ERROR:
     	console.error(type, payload.error);
-    	return state;
+    	return state.set('loading', false);
 
     default:
       	return state;

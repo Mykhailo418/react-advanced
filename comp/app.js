@@ -454,7 +454,6 @@ var SignUpForm = function (_Component) {
 }(_react.Component);
 
 SignUpForm.propTypes = {
-	match: _propTypes2.default.object,
 	handleSubmit: _propTypes2.default.func
 };
 
@@ -545,6 +544,42 @@ exports.default = ErrorField;
 
 /***/ }),
 
+/***/ "./js/components/common/Loading.js":
+/*!*****************************************!*\
+  !*** ./js/components/common/Loading.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Loading = function Loading(props) {
+	return _react2.default.createElement(
+		_react.Fragment,
+		null,
+		_react2.default.createElement(
+			'h1',
+			null,
+			'Loading....'
+		)
+	);
+};
+
+exports.default = Loading;
+
+/***/ }),
+
 /***/ "./js/components/common/ProtectedRoute.js":
 /*!************************************************!*\
   !*** ./js/components/common/ProtectedRoute.js ***!
@@ -577,6 +612,10 @@ var _NotAuthorized = __webpack_require__(/*! ../routes/NotAuthorized */ "./js/co
 
 var _NotAuthorized2 = _interopRequireDefault(_NotAuthorized);
 
+var _Loading = __webpack_require__(/*! ./Loading */ "./js/components/common/Loading.js");
+
+var _Loading2 = _interopRequireDefault(_Loading);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -604,8 +643,10 @@ var ProtectedRoute = function (_Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ProtectedRoute.__proto__ || Object.getPrototypeOf(ProtectedRoute)).call.apply(_ref, [this].concat(args))), _this), _this.getComponent = function () {
       var _this$props = _this.props,
           isAuthorized = _this$props.isAuthorized,
-          rest = _objectWithoutProperties(_this$props, ['isAuthorized']);
+          isLoading = _this$props.isLoading,
+          rest = _objectWithoutProperties(_this$props, ['isAuthorized', 'isLoading']);
 
+      if (isLoading) return _react2.default.createElement(_Loading2.default, null);
       return isAuthorized ? _react2.default.createElement(_reactRouterDom.Route, rest) : _react2.default.createElement(_NotAuthorized2.default, null);
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
@@ -616,7 +657,8 @@ var ProtectedRoute = function (_Component) {
       var _props = this.props,
           isAuthorized = _props.isAuthorized,
           component = _props.component,
-          rest = _objectWithoutProperties(_props, ['isAuthorized', 'component']);
+          isLoading = _props.isLoading,
+          rest = _objectWithoutProperties(_props, ['isAuthorized', 'component', 'isLoading']);
 
       return _react2.default.createElement(_reactRouterDom.Route, _extends({}, rest, { render: this.getComponent }));
     }
@@ -627,11 +669,115 @@ var ProtectedRoute = function (_Component) {
 
 function mapToProps(state) {
   return {
-    isAuthorized: (0, _auth.isAuthorizedSelector)(state)
+    isAuthorized: (0, _auth.isAuthorizedSelector)(state),
+    isLoading: state[_auth.moduleName].loading
   };
 }
 
 exports.default = (0, _reactRedux.connect)(mapToProps, null, null, { pure: false })(ProtectedRoute);
+
+/***/ }),
+
+/***/ "./js/components/people/AddPersonForm.js":
+/*!***********************************************!*\
+  !*** ./js/components/people/AddPersonForm.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-form/es/index.js");
+
+var _ErrorField = __webpack_require__(/*! ../common/ErrorField */ "./js/components/common/ErrorField.js");
+
+var _ErrorField2 = _interopRequireDefault(_ErrorField);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AddPersonForm = function (_Component) {
+	_inherits(AddPersonForm, _Component);
+
+	function AddPersonForm() {
+		_classCallCheck(this, AddPersonForm);
+
+		return _possibleConstructorReturn(this, (AddPersonForm.__proto__ || Object.getPrototypeOf(AddPersonForm)).apply(this, arguments));
+	}
+
+	_createClass(AddPersonForm, [{
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				_react.Fragment,
+				null,
+				_react2.default.createElement(
+					'h2',
+					null,
+					'Add Person'
+				),
+				_react2.default.createElement(
+					'form',
+					{ onSubmit: this.props.handleSubmit },
+					_react2.default.createElement(_reduxForm.Field, { label: 'First Name:', name: 'fname', component: _ErrorField2.default, idField: 'firstNamePerson' }),
+					_react2.default.createElement(_reduxForm.Field, { label: 'Last Name:', name: 'lname', component: _ErrorField2.default, idField: 'lastNamePerson' }),
+					_react2.default.createElement(_reduxForm.Field, { label: 'Email:', name: 'email', component: _ErrorField2.default, idField: 'emailPerson' }),
+					_react2.default.createElement(
+						'button',
+						{ type: 'submit', className: 'btn btn-primary' },
+						'Submit'
+					)
+				)
+			);
+		}
+	}]);
+
+	return AddPersonForm;
+}(_react.Component);
+
+AddPersonForm.propTypes = {
+	handleSubmit: _propTypes2.default.func
+};
+
+
+var validate = function validate(_ref) {
+	var fname = _ref.fname,
+	    lname = _ref.lname,
+	    email = _ref.email;
+
+	var emailExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	var errors = {};
+
+	if (!email) errors.email = 'email is a required field';else if (!emailExp.test(email)) errors.email = 'email is invalid';
+
+	if (!fname) errors.fname = 'First Name is a required field';else if (fname.length < 2) errors.fname = 'First Name is too short';
+
+	if (!lname) errors.lname = 'Last Name is a required field';else if (lname.length < 2) errors.lname = 'Last Name is too short';
+
+	return errors;
+};
+
+exports.default = (0, _reduxForm.reduxForm)({ form: 'people', validate: validate })(AddPersonForm);
 
 /***/ }),
 
@@ -659,6 +805,16 @@ var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-type
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+
+var _AddPersonForm = __webpack_require__(/*! ../people/AddPersonForm */ "./js/components/people/AddPersonForm.js");
+
+var _AddPersonForm2 = _interopRequireDefault(_AddPersonForm);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _people = __webpack_require__(/*! ../../widgets/people */ "./js/widgets/people.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -671,14 +827,34 @@ var AdminPage = function (_Component) {
 	_inherits(AdminPage, _Component);
 
 	function AdminPage() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
 		_classCallCheck(this, AdminPage);
 
-		return _possibleConstructorReturn(this, (AdminPage.__proto__ || Object.getPrototypeOf(AdminPage)).apply(this, arguments));
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AdminPage.__proto__ || Object.getPrototypeOf(AdminPage)).call.apply(_ref, [this].concat(args))), _this), _this.getAddPersonForm = function () {
+			return _react2.default.createElement(_AddPersonForm2.default, { onSubmit: _this.handleSubmit });
+		}, _this.handleSubmit = function (props_submit) {
+			var fname = props_submit.fname,
+			    lname = props_submit.lname,
+			    email = props_submit.email;
+
+			console.log('-- Add Person Form:', props_submit);
+			_this.props.addPerson({ fname: fname, lname: lname, email: email });
+			return false;
+		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(AdminPage, [{
 		key: 'render',
 		value: function render() {
+			var match = this.props.match;
+
 			return _react2.default.createElement(
 				'section',
 				null,
@@ -686,6 +862,28 @@ var AdminPage = function (_Component) {
 					'h1',
 					null,
 					'Admin Page'
+				),
+				_react2.default.createElement(
+					'nav',
+					{ className: 'navbar navbar-expand-lg navbar-light bg-light' },
+					_react2.default.createElement(
+						'ul',
+						{ className: 'navbar-nav' },
+						_react2.default.createElement(
+							'li',
+							{ className: 'nav-item' },
+							_react2.default.createElement(
+								_reactRouterDom.NavLink,
+								{ to: match.path + '/add-person', activeClassName: 'active', className: 'nav-link' },
+								'Add Person'
+							)
+						)
+					)
+				),
+				_react2.default.createElement(
+					_reactRouterDom.Switch,
+					null,
+					_react2.default.createElement(_reactRouterDom.Route, { path: match.path + '/add-person', render: this.getAddPersonForm })
 				)
 			);
 		}
@@ -694,8 +892,10 @@ var AdminPage = function (_Component) {
 	return AdminPage;
 }(_react.Component);
 
-AdminPage.propTypes = {};
-exports.default = AdminPage;
+AdminPage.propTypes = {
+	match: _propTypes2.default.object
+};
+exports.default = (0, _reactRedux.connect)(null, { addPerson: _people.addPerson })(AdminPage);
 
 /***/ }),
 
@@ -955,6 +1155,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _combineReducers;
+
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
 var _reactRouterRedux = __webpack_require__(/*! react-router-redux */ "./node_modules/react-router-redux/es/index.js");
@@ -965,13 +1167,25 @@ var _auth = __webpack_require__(/*! ../widgets/auth */ "./js/widgets/auth.js");
 
 var _auth2 = _interopRequireDefault(_auth);
 
+var _people = __webpack_require__(/*! ../widgets/people */ "./js/widgets/people.js");
+
+var _people2 = _interopRequireDefault(_people);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-exports.default = (0, _redux.combineReducers)(_defineProperty({
-	router: _reactRouterRedux.routerReducer, form: _reduxForm.reducer
-}, _auth.moduleName, _auth2.default));
+exports.default = (0, _redux.combineReducers)((_combineReducers = {
+	router: _reactRouterRedux.routerReducer,
+	form: _reduxForm.reducer.plugin(_defineProperty({}, _people.moduleName, function (state, action) {
+		switch (action.type) {
+			case _people.ADD_PERSON:
+				return undefined;
+			default:
+				return state;
+		}
+	}))
+}, _defineProperty(_combineReducers, _auth.moduleName, _auth2.default), _defineProperty(_combineReducers, _people.moduleName, _people2.default), _combineReducers));
 
 /***/ }),
 
@@ -1067,7 +1281,8 @@ var isAuthorizedSelector = exports.isAuthorizedSelector = function isAuthorizedS
 
 // Reducer
 var ReducerRecord = exports.ReducerRecord = (0, _immutable.Record)({
-  user: null
+  user: null,
+  loading: true
 });
 
 function reducer() {
@@ -1080,12 +1295,12 @@ function reducer() {
   switch (type) {
     case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
-      return state.set('user', payload.user);
+      return state.set('user', payload.user).set('loading', false);
 
     case SIGN_IN_ERROR:
     case SIGN_IN_ERROR:
       console.error(type, payload.error);
-      return state;
+      return state.set('loading', false);
 
     default:
       return state;
@@ -1145,6 +1360,74 @@ _app2.default.auth().onAuthStateChanged(function (user) {
     payload: { user: user }
   });
 });
+
+/***/ }),
+
+/***/ "./js/widgets/people.js":
+/*!******************************!*\
+  !*** ./js/widgets/people.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.ReducerRecord = exports.ADD_PERSON = exports.moduleName = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = reducer;
+exports.addPerson = addPerson;
+
+var _firebase = __webpack_require__(/*! ../firebase */ "./js/firebase.js");
+
+var _immutable = __webpack_require__(/*! immutable */ "./node_modules/immutable/dist/immutable.js");
+
+// Constants
+var moduleName = exports.moduleName = 'people';
+var prefix = _firebase.app_name + '/' + moduleName;
+var ADD_PERSON = exports.ADD_PERSON = prefix + '/ADD_PERSON';
+
+var ReducerRecord = exports.ReducerRecord = (0, _immutable.Record)({
+	people: (0, _immutable.List)([])
+});
+
+function reducer() {
+	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new ReducerRecord();
+	var action = arguments[1];
+	var type = action.type,
+	    payload = action.payload;
+
+	console.log('-- ADD PERSON REDUCER', state);
+	switch (type) {
+
+		case ADD_PERSON:
+			return state.updateIn(['people'], function (list) {
+				return list.push(_extends({}, payload.person));
+			});
+
+		default:
+			return state;
+	}
+}
+
+// Action Creators
+function addPerson(_ref) {
+	var fname = _ref.fname,
+	    lname = _ref.lname,
+	    email = _ref.email;
+
+	return {
+		type: ADD_PERSON,
+		payload: {
+			person: { fname: fname, lname: lname, email: email }
+		}
+	};
+}
 
 /***/ }),
 
