@@ -6,8 +6,15 @@ export const moduleName = 'people';
 const prefix = `${app_name}/${moduleName}`;
 export const ADD_PERSON = `${prefix}/ADD_PERSON`;
 
-export const ReducerRecord = Record({
+const ReducerRecord = Record({
   people: List([])
+});
+
+const PersonRecord = Record({
+	id: null,
+	fname: null,
+	lname: null,
+	email: null
 });
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -16,8 +23,8 @@ export default function reducer(state = new ReducerRecord(), action) {
 	switch(type){
 
 		case ADD_PERSON:
-			return  state.updateIn(['people'], (list) =>{
-				return list.push({...payload.person});
+			return  state.update('people', (list) =>{
+				return list.push(new PersonRecord({...payload.person}));
 			});
 
 		default:
@@ -27,10 +34,13 @@ export default function reducer(state = new ReducerRecord(), action) {
 
 // Action Creators
 export function addPerson({fname, lname, email}) {
-	return {
-		type: ADD_PERSON,
-		payload: {
-			person: {fname, lname, email}
-		}
+	// Using thunk because Date.now() is considered as a side effect
+	return (dispatch) => {
+		dispatch({
+			type: ADD_PERSON,
+			payload: {
+				person: {id: Date.now(), fname, lname, email}
+			}
+		});
 	}
 }

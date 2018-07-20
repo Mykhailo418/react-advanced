@@ -1376,7 +1376,7 @@ _app2.default.auth().onAuthStateChanged(function (user) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ReducerRecord = exports.ADD_PERSON = exports.moduleName = undefined;
+exports.ADD_PERSON = exports.moduleName = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1392,8 +1392,15 @@ var moduleName = exports.moduleName = 'people';
 var prefix = _firebase.app_name + '/' + moduleName;
 var ADD_PERSON = exports.ADD_PERSON = prefix + '/ADD_PERSON';
 
-var ReducerRecord = exports.ReducerRecord = (0, _immutable.Record)({
+var ReducerRecord = (0, _immutable.Record)({
 	people: (0, _immutable.List)([])
+});
+
+var PersonRecord = (0, _immutable.Record)({
+	id: null,
+	fname: null,
+	lname: null,
+	email: null
 });
 
 function reducer() {
@@ -1406,8 +1413,8 @@ function reducer() {
 	switch (type) {
 
 		case ADD_PERSON:
-			return state.updateIn(['people'], function (list) {
-				return list.push(_extends({}, payload.person));
+			return state.update('people', function (list) {
+				return list.push(new PersonRecord(_extends({}, payload.person)));
 			});
 
 		default:
@@ -1421,11 +1428,14 @@ function addPerson(_ref) {
 	    lname = _ref.lname,
 	    email = _ref.email;
 
-	return {
-		type: ADD_PERSON,
-		payload: {
-			person: { fname: fname, lname: lname, email: email }
-		}
+	// Using thunk because Date.now() is considered as a side effect
+	return function (dispatch) {
+		dispatch({
+			type: ADD_PERSON,
+			payload: {
+				person: { id: Date.now(), fname: fname, lname: lname, email: email }
+			}
+		});
 	};
 }
 
