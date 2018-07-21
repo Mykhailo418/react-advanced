@@ -4,10 +4,15 @@ import thunk from "redux-thunk";
 import logger from 'redux-logger'
 import { connectRouter, routerMiddleware } from 'connected-react-router'
 import history from '../history';
+import createSagaMiddleware from 'redux-saga';
+import saga from './saga';
 
-const enhancer = applyMiddleware(thunk, routerMiddleware(history), logger);
+const sagaMiddleware = createSagaMiddleware();
+const enhancer = applyMiddleware(sagaMiddleware, thunk, routerMiddleware(history));
 
-const store = createStore(connectRouter(history)(reducers), enhancer)
+const store = createStore(connectRouter(history)(reducers), enhancer);
+
+sagaMiddleware.run(saga);
 
 // dev only
 if(DEV_ENV){

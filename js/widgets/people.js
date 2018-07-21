@@ -1,9 +1,13 @@
+import 'regenerator-runtime/runtime';
 import {app_name} from '../firebase';
 import { Record, List } from 'immutable';
+import {put, call, takeEvery} from 'redux-saga/effects';
+import {generateId} from '../utils';
 
 // Constants
 export const moduleName = 'people';
 const prefix = `${app_name}/${moduleName}`;
+export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`;
 export const ADD_PERSON = `${prefix}/ADD_PERSON`;
 
 const ReducerRecord = Record({
@@ -19,12 +23,10 @@ const PersonRecord = Record({
 
 export default function reducer(state = new ReducerRecord(), action) {
 	const {type, payload} = action;
-	console.log('-- ADD PERSON REDUCER', state);
 	switch(type){
-
 		case ADD_PERSON:
 			return  state.update('people', (list) =>{
-				return list.push(new PersonRecord({...payload.person}));
+				return list.push(new PersonRecord({...payload}));
 			});
 
 		default:
@@ -33,7 +35,7 @@ export default function reducer(state = new ReducerRecord(), action) {
 }
 
 // Action Creators
-export function addPerson({fname, lname, email}) {
+/*export function addPerson({fname, lname, email}) {
 	// Using thunk because Date.now() is considered as a side effect
 	return (dispatch) => {
 		dispatch({
@@ -43,4 +45,24 @@ export function addPerson({fname, lname, email}) {
 			}
 		});
 	}
+}*/
+export function addPerson({fname, lname, email}){
+	return {
+		type: ADD_PERSON_REQUEST,
+		payload: {fname, lname, email}
+	}
+}
+
+// Saga
+export function* addPersonSaga (action) {
+    const id = yield call(generateId);
+    console.log('-- Add person saga id = ', id);
+    yield put({
+        type: ADD_PERSON,
+        payload: {...action.payload, id}
+    });
+}
+
+export const saga = function * () {
+    yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
 }
