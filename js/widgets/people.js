@@ -3,9 +3,11 @@ import {app_name} from '../firebase';
 import { Record, List } from 'immutable';
 import {put, call, takeEvery} from 'redux-saga/effects';
 import {generateId} from '../utils';
+import { reset } from 'redux-form';
 
 // Constants
 export const moduleName = 'people';
+export const formName = 'people';
 const prefix = `${app_name}/${moduleName}`;
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`;
 export const ADD_PERSON = `${prefix}/ADD_PERSON`;
@@ -61,6 +63,7 @@ export function* addPersonSaga (action) {
         type: ADD_PERSON,
         payload: {...action.payload, id}
     });
+    yield put(reset(moduleName));
 }
 
 export const saga = function * () {

@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { reduxForm, Field } from 'redux-form';
+import { signInFormName } from '../../widgets/auth';
 
 class SignInForm extends Component{
 	static propTypes = {
@@ -29,4 +30,4 @@ class SignInForm extends Component{
 
 }
 
-export default reduxForm({ form:'auth'})(SignInForm);
+export default reduxForm({ form: signInFormName})(SignInForm);

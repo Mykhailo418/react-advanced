@@ -2,6 +2,7 @@ import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { reduxForm, Field } from 'redux-form';
 import ErrorField from '../common/ErrorField';
+import { signInFormName } from '../../widgets/auth';
 
 class SignUpForm extends Component{
 	static propTypes = {
@@ -35,4 +36,4 @@ const validate = ({ email, password }) => {
   	return errors;
 }
 
-export default reduxForm({ form:'auth', validate})(SignUpForm);
+export default reduxForm({ form: signInFormName, validate})(SignUpForm);

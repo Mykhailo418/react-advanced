@@ -305,6 +305,8 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-form/es/index.js");
 
+var _auth = __webpack_require__(/*! ../../widgets/auth */ "./js/widgets/auth.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -373,7 +375,7 @@ SignInForm.propTypes = {
 	match: _propTypes2.default.object,
 	handleSubmit: _propTypes2.default.func
 };
-exports.default = (0, _reduxForm.reduxForm)({ form: 'auth' })(SignInForm);
+exports.default = (0, _reduxForm.reduxForm)({ form: _auth.signInFormName })(SignInForm);
 
 /***/ }),
 
@@ -406,6 +408,8 @@ var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-for
 var _ErrorField = __webpack_require__(/*! ../common/ErrorField */ "./js/components/common/ErrorField.js");
 
 var _ErrorField2 = _interopRequireDefault(_ErrorField);
+
+var _auth = __webpack_require__(/*! ../../widgets/auth */ "./js/widgets/auth.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -472,7 +476,7 @@ var validate = function validate(_ref) {
 	return errors;
 };
 
-exports.default = (0, _reduxForm.reduxForm)({ form: 'auth', validate: validate })(SignUpForm);
+exports.default = (0, _reduxForm.reduxForm)({ form: _auth.signInFormName, validate: validate })(SignUpForm);
 
 /***/ }),
 
@@ -708,6 +712,8 @@ var _ErrorField = __webpack_require__(/*! ../common/ErrorField */ "./js/componen
 
 var _ErrorField2 = _interopRequireDefault(_ErrorField);
 
+var _people = __webpack_require__(/*! ../../widgets/people */ "./js/widgets/people.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -777,7 +783,7 @@ var validate = function validate(_ref) {
 	return errors;
 };
 
-exports.default = (0, _reduxForm.reduxForm)({ form: 'people', validate: validate })(AddPersonForm);
+exports.default = (0, _reduxForm.reduxForm)({ form: _people.formName, validate: validate })(AddPersonForm);
 
 /***/ }),
 
@@ -1177,14 +1183,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 exports.default = (0, _redux.combineReducers)((_combineReducers = {
 	router: _reactRouterRedux.routerReducer,
-	form: _reduxForm.reducer.plugin(_defineProperty({}, _people.moduleName, function (state, action) {
-		switch (action.type) {
-			case _people.ADD_PERSON:
-				return undefined;
-			default:
-				return state;
-		}
-	}))
+	form: _reduxForm.reducer
 }, _defineProperty(_combineReducers, _auth.moduleName, _auth2.default), _defineProperty(_combineReducers, _people.moduleName, _people2.default), _combineReducers));
 
 /***/ }),
@@ -1208,6 +1207,8 @@ var _effects = __webpack_require__(/*! redux-saga/effects */ "./node_modules/red
 
 var _people = __webpack_require__(/*! ../widgets/people */ "./js/widgets/people.js");
 
+var _auth = __webpack_require__(/*! ../widgets/auth */ "./js/widgets/auth.js");
+
 var _marked = /*#__PURE__*/regeneratorRuntime.mark(_callee);
 
 function _callee() {
@@ -1216,7 +1217,7 @@ function _callee() {
       switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return (0, _effects.all)([(0, _people.saga)()]);
+          return (0, _effects.all)([(0, _people.saga)(), (0, _auth.saga)()]);
 
         case 2:
         case 'end':
@@ -1248,10 +1249,6 @@ var _reducers = __webpack_require__(/*! ./reducers */ "./js/redux/reducers.js");
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
-var _reduxThunk = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
-
-var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
 var _reduxLogger = __webpack_require__(/*! redux-logger */ "./node_modules/redux-logger/dist/redux-logger.js");
 
 var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
@@ -1273,7 +1270,7 @@ var _saga2 = _interopRequireDefault(_saga);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var sagaMiddleware = (0, _reduxSaga2.default)();
-var enhancer = (0, _redux.applyMiddleware)(sagaMiddleware, _reduxThunk2.default, (0, _connectedReactRouter.routerMiddleware)(_history2.default));
+var enhancer = (0, _redux.applyMiddleware)(sagaMiddleware, (0, _connectedReactRouter.routerMiddleware)(_history2.default));
 
 var store = (0, _redux.createStore)((0, _connectedReactRouter.connectRouter)(_history2.default)(_reducers2.default), enhancer);
 
@@ -1321,10 +1318,13 @@ function generateId() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ReducerRecord = exports.isAuthorizedSelector = exports.SIGN_UP_ERROR = exports.SIGN_IN_ERROR = exports.SIGN_UP_SUCCESS = exports.SIGN_IN_SUCCESS = exports.moduleName = undefined;
+exports.saga = exports.watchStatusChange = exports.ReducerRecord = exports.isAuthorizedSelector = exports.SIGN_UP_ERROR = exports.SIGN_IN_ERROR = exports.SIGN_UP_REQUEST = exports.SIGN_UP_SUCCESS = exports.SIGN_IN_SUCCESS = exports.signInFormName = exports.signUpFormName = exports.moduleName = undefined;
 exports.default = reducer;
 exports.signIn = signIn;
 exports.signUp = signUp;
+exports.signUpSaga = signUpSaga;
+
+__webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
 
 var _firebase = __webpack_require__(/*! ../firebase */ "./js/firebase.js");
 
@@ -1334,13 +1334,22 @@ var _app = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/
 
 var _app2 = _interopRequireDefault(_app);
 
+var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-form/es/index.js");
+
+var _effects = __webpack_require__(/*! redux-saga/effects */ "./node_modules/redux-saga/es/effects.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _marked = /*#__PURE__*/regeneratorRuntime.mark(signUpSaga);
 
 // Constants
 var moduleName = exports.moduleName = 'auth';
+var signUpFormName = exports.signUpFormName = 'signUp';
+var signInFormName = exports.signInFormName = 'signIn';
 var prefix = _firebase.app_name + '/' + moduleName;
 var SIGN_IN_SUCCESS = exports.SIGN_IN_SUCCESS = prefix + '/SIGN_IN_SUCCESS';
 var SIGN_UP_SUCCESS = exports.SIGN_UP_SUCCESS = prefix + '/SIGN_UP_SUCCESS';
+var SIGN_UP_REQUEST = exports.SIGN_UP_REQUEST = prefix + '/SIGN_UP_REQUEST';
 var SIGN_IN_ERROR = exports.SIGN_IN_ERROR = prefix + '/SIGN_IN_ERROR';
 var SIGN_UP_ERROR = exports.SIGN_UP_ERROR = prefix + '/SIGN_UP_ERROR';
 
@@ -1404,32 +1413,146 @@ function signIn(_ref) {
   };
 }
 
+/*export function signUp({email, password}) {
+  return (dispatch) => {
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((user) =>{
+        dispatch({
+          type: SIGN_UP_SUCCESS,
+          payload: { user }
+        });
+      }).catch((e) => {
+      	dispatch({
+      		type: SIGN_UP_ERROR,
+      		payload: { error: e }
+      	});
+      });
+  };
+}*/
 function signUp(_ref2) {
   var email = _ref2.email,
       password = _ref2.password;
 
-  return function (dispatch) {
-    _app2.default.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
-      dispatch({
-        type: SIGN_UP_SUCCESS,
-        payload: { user: user }
-      });
-    }).catch(function (e) {
-      dispatch({
-        type: SIGN_UP_ERROR,
-        payload: { error: e }
-      });
-    });
+  return {
+    type: SIGN_UP_REQUEST,
+    payload: { email: email, password: password }
   };
 }
 
+// Saga
+
+function signUpSaga() {
+  var auth, action, _action$payload, email, password, user;
+
+  return regeneratorRuntime.wrap(function signUpSaga$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          auth = _app2.default.auth();
+
+        case 1:
+          if (false) {}
+
+          _context.next = 4;
+          return (0, _effects.take)(SIGN_UP_REQUEST);
+
+        case 4:
+          action = _context.sent;
+          _action$payload = action.payload, email = _action$payload.email, password = _action$payload.password;
+          _context.prev = 6;
+          _context.next = 9;
+          return (0, _effects.call)([auth, auth.createUserWithEmailAndPassword], email, password);
+
+        case 9:
+          user = _context.sent;
+          _context.next = 12;
+          return (0, _effects.put)({
+            type: SIGN_UP_SUCCESS,
+            payload: { user: user }
+          });
+
+        case 12:
+          _context.next = 18;
+          break;
+
+        case 14:
+          _context.prev = 14;
+          _context.t0 = _context['catch'](6);
+          _context.next = 18;
+          return (0, _effects.put)({
+            type: SIGN_UP_ERROR,
+            payload: { error: _context.t0 }
+          });
+
+        case 18:
+          _context.next = 1;
+          break;
+
+        case 20:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, _marked, this, [[6, 14]]);
+}
+
+var watchStatusChange = /*#__PURE__*/exports.watchStatusChange = regeneratorRuntime.mark(function watchStatusChange() {
+  var auth;
+  return regeneratorRuntime.wrap(function watchStatusChange$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          auth = _app2.default.auth();
+          _context2.prev = 1;
+          _context2.next = 4;
+          return (0, _effects.cps)([auth, auth.onAuthStateChanged]);
+
+        case 4:
+          _context2.next = 10;
+          break;
+
+        case 6:
+          _context2.prev = 6;
+          _context2.t0 = _context2['catch'](1);
+          _context2.next = 10;
+          return (0, _effects.put)({
+            type: SIGN_IN_SUCCESS,
+            payload: { user: _context2.t0 }
+          });
+
+        case 10:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, watchStatusChange, this, [[1, 6]]);
+});
+
+var saga = /*#__PURE__*/exports.saga = regeneratorRuntime.mark(function saga() {
+  return regeneratorRuntime.wrap(function saga$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.next = 2;
+          return (0, _effects.all)([signUpSaga(), watchStatusChange()]);
+
+        case 2:
+        case 'end':
+          return _context3.stop();
+      }
+    }
+  }, saga, this);
+});
+
 // Init
-_app2.default.auth().onAuthStateChanged(function (user) {
+/*firebase.auth().onAuthStateChanged((user) => {
   window.store.dispatch({
     type: SIGN_IN_SUCCESS,
-    payload: { user: user }
+    payload: { user }
   });
-});
+});*/
 
 /***/ }),
 
@@ -1446,7 +1569,7 @@ _app2.default.auth().onAuthStateChanged(function (user) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.saga = exports.ADD_PERSON = exports.ADD_PERSON_REQUEST = exports.moduleName = undefined;
+exports.saga = exports.ADD_PERSON = exports.ADD_PERSON_REQUEST = exports.formName = exports.moduleName = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1464,10 +1587,13 @@ var _effects = __webpack_require__(/*! redux-saga/effects */ "./node_modules/red
 
 var _utils = __webpack_require__(/*! ../utils */ "./js/utils.js");
 
+var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-form/es/index.js");
+
 var _marked = /*#__PURE__*/regeneratorRuntime.mark(addPersonSaga);
 
 // Constants
 var moduleName = exports.moduleName = 'people';
+var formName = exports.formName = 'people';
 var prefix = _firebase.app_name + '/' + moduleName;
 var ADD_PERSON_REQUEST = exports.ADD_PERSON_REQUEST = prefix + '/ADD_PERSON_REQUEST';
 var ADD_PERSON = exports.ADD_PERSON = prefix + '/ADD_PERSON';
@@ -1544,6 +1670,10 @@ function addPersonSaga(action) {
 					});
 
 				case 6:
+					_context.next = 8;
+					return (0, _effects.put)((0, _reduxForm.reset)(moduleName));
+
+				case 8:
 				case 'end':
 					return _context.stop();
 			}
@@ -55913,38 +56043,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-/***/ }),
-
-/***/ "./node_modules/redux-thunk/es/index.js":
-/*!**********************************************!*\
-  !*** ./node_modules/redux-thunk/es/index.js ***!
-  \**********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-function createThunkMiddleware(extraArgument) {
-  return function (_ref) {
-    var dispatch = _ref.dispatch,
-        getState = _ref.getState;
-    return function (next) {
-      return function (action) {
-        if (typeof action === 'function') {
-          return action(dispatch, getState, extraArgument);
-        }
-
-        return next(action);
-      };
-    };
-  };
-}
-
-var thunk = createThunkMiddleware();
-thunk.withExtraArgument = createThunkMiddleware;
-
-/* harmony default export */ __webpack_exports__["default"] = (thunk);
 
 /***/ }),
 

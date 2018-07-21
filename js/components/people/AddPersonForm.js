@@ -2,6 +2,7 @@ import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { reduxForm, Field } from 'redux-form';
 import ErrorField from '../common/ErrorField';
+import { formName } from '../../widgets/people';
 
 class AddPersonForm extends Component{
 	static propTypes = {
@@ -39,4 +40,4 @@ const validate = ({fname, lname, email}) => {
   	return errors;
 }
 
-export default reduxForm({ form:'people', validate})(AddPersonForm);
+export default reduxForm({ form: formName, validate})(AddPersonForm);

@@ -1,12 +1,18 @@
+import 'regenerator-runtime/runtime';
 import {app_name} from '../firebase';
 import { Record } from 'immutable';
 import firebase from 'firebase/app';
+import { reset } from 'redux-form';
+import {put, call, take, all, cps} from 'redux-saga/effects';
 
 // Constants
 export const moduleName = 'auth';
+export const signUpFormName = 'signUp';
+export const signInFormName = 'signIn';
 const prefix = `${app_name}/${moduleName}`;
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`;
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`;
+export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`;
 export const SIGN_IN_ERROR = `${prefix}/SIGN_IN_ERROR`;
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`;
 
@@ -67,7 +73,7 @@ export function signIn({email, password}) {
   };
 }
 
-export function signUp({email, password}) {
+/*export function signUp({email, password}) {
   return (dispatch) => {
     firebase
       .auth()
@@ -84,13 +90,60 @@ export function signUp({email, password}) {
       	});
       });
   };
+}*/
+export function signUp({email, password}) {
+  return {
+    type: SIGN_UP_REQUEST,
+    payload: {email, password}
+  };
 }
 
+// Saga
+
+export function* signUpSaga(){
+  const auth = firebase.auth();
+
+  while(true){
+    const action = yield take(SIGN_UP_REQUEST);
+    const {email, password} = action.payload;
+    try{
+      const user = yield call([auth, auth.createUserWithEmailAndPassword], email, password);
+      yield put({
+          type: SIGN_UP_SUCCESS,
+          payload: { user }
+      });
+    }catch(e){
+      yield put({
+          type: SIGN_UP_ERROR,
+          payload: { error: e }
+      });
+    }
+
+  }
+}
+
+export const watchStatusChange = function * () {
+    const auth = firebase.auth();
+
+    try {
+        yield cps([auth, auth.onAuthStateChanged]);
+    } catch (user) {
+        yield put({
+            type: SIGN_IN_SUCCESS,
+            payload: {user}
+        });
+    }
+
+}
+
+export const saga = function * () {
+    yield all([ signUpSaga(), watchStatusChange() ]);
+}
 
 // Init
-firebase.auth().onAuthStateChanged((user) => {
+/*firebase.auth().onAuthStateChanged((user) => {
   window.store.dispatch({
     type: SIGN_IN_SUCCESS,
     payload: { user }
   });
-});
+});*/
