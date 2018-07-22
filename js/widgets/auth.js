@@ -3,7 +3,7 @@ import {app_name} from '../firebase';
 import { Record } from 'immutable';
 import firebase from 'firebase/app';
 import { reset } from 'redux-form';
-import {push} from 'react-router-redux'
+import {push} from 'react-router-redux';
 
 import {put, call, take, all, cps, takeEvery} from 'redux-saga/effects';
 
@@ -124,7 +124,6 @@ export function signOut() {
 // Saga
 
 export function* signOutSaga(){
-  console.log('-- signOutSaga');
     const auth = firebase.auth();
     try{
       yield call([auth, auth.signOut]);
@@ -133,7 +132,7 @@ export function* signOutSaga(){
       });
       yield put(push('/auth/signin'));
     }catch(error){
-      put({
+      yield put({
         type: SIGN_OUT_ERROR,
         payload: { error }
       });

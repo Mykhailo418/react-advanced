@@ -1534,31 +1534,30 @@ function signOutSaga() {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          console.log('-- signOutSaga');
           auth = _app2.default.auth();
-          _context.prev = 2;
-          _context.next = 5;
+          _context.prev = 1;
+          _context.next = 4;
           return (0, _effects.call)([auth, auth.signOut]);
 
-        case 5:
-          _context.next = 7;
+        case 4:
+          _context.next = 6;
           return (0, _effects.put)({
             type: SIGN_OUT_SUCCESS
           });
 
-        case 7:
-          _context.next = 9;
+        case 6:
+          _context.next = 8;
           return (0, _effects.put)((0, _reactRouterRedux.push)('/auth/signin'));
 
-        case 9:
+        case 8:
           _context.next = 14;
           break;
 
-        case 11:
-          _context.prev = 11;
-          _context.t0 = _context['catch'](2);
-
-          (0, _effects.put)({
+        case 10:
+          _context.prev = 10;
+          _context.t0 = _context['catch'](1);
+          _context.next = 14;
+          return (0, _effects.put)({
             type: SIGN_OUT_ERROR,
             payload: { error: _context.t0 }
           });
@@ -1568,7 +1567,7 @@ function signOutSaga() {
           return _context.stop();
       }
     }
-  }, _marked, this, [[2, 11]]);
+  }, _marked, this, [[1, 10]]);
 }
 
 function signInSaga() {
