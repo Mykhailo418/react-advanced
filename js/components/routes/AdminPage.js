@@ -4,16 +4,20 @@ import {Route, NavLink, Switch} from 'react-router-dom';
 import AddPersonForm from '../people/AddPersonForm';
 import {connect} from 'react-redux';
 import { addPerson } from '../../widgets/people';
+import { moduleName as moduleAuthName } from '../../widgets/auth';
 
 class AdminPage extends Component{
 	static propTypes = {
-		match: PropTypes.object
+		match: PropTypes.object,
+		user: PropTypes.object
 	}
 
 	render(){
-		const {match} = this.props;
+		const {match, user} = this.props;
+		let email_span = (user) ? <span className="float-right">{user.email}</span> : null;
 		return(
 			<section>
+				{email_span}
 				<h1>Admin Page</h1>
 				<nav className="navbar navbar-expand-lg navbar-light bg-light">
 				    <ul className="navbar-nav">
@@ -43,4 +47,10 @@ class AdminPage extends Component{
 	}
 }
 
-export default connect(null, {addPerson})(AdminPage);
+function sateToProps(state, props){
+	return {
+		user: state[moduleAuthName].user
+	}
+}
+
+export default connect(sateToProps, {addPerson})(AdminPage);

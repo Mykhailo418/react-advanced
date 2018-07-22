@@ -821,6 +821,8 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _people = __webpack_require__(/*! ../../widgets/people */ "./js/widgets/people.js");
 
+var _auth = __webpack_require__(/*! ../../widgets/auth */ "./js/widgets/auth.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -859,11 +861,19 @@ var AdminPage = function (_Component) {
 	_createClass(AdminPage, [{
 		key: 'render',
 		value: function render() {
-			var match = this.props.match;
+			var _props = this.props,
+			    match = _props.match,
+			    user = _props.user;
 
+			var email_span = user ? _react2.default.createElement(
+				'span',
+				{ className: 'float-right' },
+				user.email
+			) : null;
 			return _react2.default.createElement(
 				'section',
 				null,
+				email_span,
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -899,9 +909,18 @@ var AdminPage = function (_Component) {
 }(_react.Component);
 
 AdminPage.propTypes = {
-	match: _propTypes2.default.object
+	match: _propTypes2.default.object,
+	user: _propTypes2.default.object
 };
-exports.default = (0, _reactRedux.connect)(null, { addPerson: _people.addPerson })(AdminPage);
+
+
+function sateToProps(state, props) {
+	return {
+		user: state[_auth.moduleName].user
+	};
+}
+
+exports.default = (0, _reactRedux.connect)(sateToProps, { addPerson: _people.addPerson })(AdminPage);
 
 /***/ }),
 
@@ -983,6 +1002,9 @@ var AuthPage = function (_Component) {
 			console.log('---', email, password);
 			_this.props.signUp({ email: email, password: password });
 			return false;
+		}, _this.signOutClick = function (e) {
+			e.preventDefault();
+			_this.props.signOut();
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -990,11 +1012,37 @@ var AuthPage = function (_Component) {
 		key: 'render',
 		value: function render() {
 			//console.log(this.props);
-			var match = this.props.match;
+			var _props = this.props,
+			    match = _props.match,
+			    user = _props.user;
 
+			var email_span = user ? _react2.default.createElement(
+				'span',
+				{ className: 'float-right' },
+				user.email
+			) : null;
+			var signInOut = user ? _react2.default.createElement(
+				'a',
+				{ href: '#', className: 'nav-link', onClick: this.signOutClick },
+				'Sign Out'
+			) : _react2.default.createElement(
+				_reactRouterDom.NavLink,
+				{ to: match.path + '/signin', activeClassName: 'active', className: 'nav-link' },
+				'Sign In'
+			);
+			var admin_page = user ? _react2.default.createElement(
+				'li',
+				null,
+				_react2.default.createElement(
+					_reactRouterDom.Link,
+					{ to: '/admin', className: 'nav-link' },
+					'Admin Page'
+				)
+			) : null;
 			return _react2.default.createElement(
 				'section',
 				null,
+				email_span,
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -1014,19 +1062,16 @@ var AuthPage = function (_Component) {
 								{ className: 'nav-item' },
 								_react2.default.createElement(
 									_reactRouterDom.NavLink,
-									{ to: match.path + '/signin', activeClassName: 'active', className: 'nav-link' },
-									'Sign In'
+									{ to: match.path + '/signup', activeClassName: 'active', className: 'nav-link' },
+									'Sign Up'
 								)
 							),
 							_react2.default.createElement(
 								'li',
 								{ className: 'nav-item' },
-								_react2.default.createElement(
-									_reactRouterDom.NavLink,
-									{ to: match.path + '/signup', activeClassName: 'active', className: 'nav-link' },
-									'Sign Up'
-								)
-							)
+								signInOut
+							),
+							admin_page
 						)
 					)
 				),
@@ -1044,9 +1089,18 @@ var AuthPage = function (_Component) {
 }(_react.Component);
 
 AuthPage.propTypes = {
-	match: _propTypes2.default.object
+	match: _propTypes2.default.object,
+	user: _propTypes2.default.object
 };
-exports.default = (0, _reactRedux.connect)(null, { signIn: _auth.signIn, signUp: _auth.signUp })(AuthPage);
+
+
+function sateToProps(state, props) {
+	return {
+		user: state[_auth.moduleName].user
+	};
+}
+
+exports.default = (0, _reactRedux.connect)(sateToProps, { signIn: _auth.signIn, signUp: _auth.signUp, signOut: _auth.signOut })(AuthPage);
 
 /***/ }),
 
@@ -1318,10 +1372,13 @@ function generateId() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.saga = exports.watchStatusChange = exports.ReducerRecord = exports.isAuthorizedSelector = exports.SIGN_UP_ERROR = exports.SIGN_IN_ERROR = exports.SIGN_UP_REQUEST = exports.SIGN_UP_SUCCESS = exports.SIGN_IN_SUCCESS = exports.signInFormName = exports.signUpFormName = exports.moduleName = undefined;
+exports.saga = exports.watchStatusChange = exports.ReducerRecord = exports.isAuthorizedSelector = exports.SIGN_OUT_ERROR = exports.SIGN_UP_ERROR = exports.SIGN_IN_ERROR = exports.SIGN_OUT_REQUEST = exports.SIGN_IN_REQUEST = exports.SIGN_UP_REQUEST = exports.SIGN_OUT_SUCCESS = exports.SIGN_UP_SUCCESS = exports.SIGN_IN_SUCCESS = exports.signInFormName = exports.signUpFormName = exports.moduleName = undefined;
 exports.default = reducer;
-exports.signIn = signIn;
 exports.signUp = signUp;
+exports.signIn = signIn;
+exports.signOut = signOut;
+exports.signOutSaga = signOutSaga;
+exports.signInSaga = signInSaga;
 exports.signUpSaga = signUpSaga;
 
 __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
@@ -1336,11 +1393,15 @@ var _app2 = _interopRequireDefault(_app);
 
 var _reduxForm = __webpack_require__(/*! redux-form */ "./node_modules/redux-form/es/index.js");
 
+var _reactRouterRedux = __webpack_require__(/*! react-router-redux */ "./node_modules/react-router-redux/es/index.js");
+
 var _effects = __webpack_require__(/*! redux-saga/effects */ "./node_modules/redux-saga/es/effects.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _marked = /*#__PURE__*/regeneratorRuntime.mark(signUpSaga);
+var _marked = /*#__PURE__*/regeneratorRuntime.mark(signOutSaga),
+    _marked2 = /*#__PURE__*/regeneratorRuntime.mark(signInSaga),
+    _marked3 = /*#__PURE__*/regeneratorRuntime.mark(signUpSaga);
 
 // Constants
 var moduleName = exports.moduleName = 'auth';
@@ -1349,9 +1410,15 @@ var signInFormName = exports.signInFormName = 'signIn';
 var prefix = _firebase.app_name + '/' + moduleName;
 var SIGN_IN_SUCCESS = exports.SIGN_IN_SUCCESS = prefix + '/SIGN_IN_SUCCESS';
 var SIGN_UP_SUCCESS = exports.SIGN_UP_SUCCESS = prefix + '/SIGN_UP_SUCCESS';
+var SIGN_OUT_SUCCESS = exports.SIGN_OUT_SUCCESS = prefix + '/SIGN_OUT_SUCCESS';
+
 var SIGN_UP_REQUEST = exports.SIGN_UP_REQUEST = prefix + '/SIGN_UP_REQUEST';
+var SIGN_IN_REQUEST = exports.SIGN_IN_REQUEST = prefix + '/SIGN_IN_REQUEST';
+var SIGN_OUT_REQUEST = exports.SIGN_OUT_REQUEST = prefix + '/SIGN_OUT_REQUEST';
+
 var SIGN_IN_ERROR = exports.SIGN_IN_ERROR = prefix + '/SIGN_IN_ERROR';
 var SIGN_UP_ERROR = exports.SIGN_UP_ERROR = prefix + '/SIGN_UP_ERROR';
+var SIGN_OUT_ERROR = exports.SIGN_OUT_ERROR = prefix + '/SIGN_OUT_ERROR';
 
 // Selectors
 var isAuthorizedSelector = exports.isAuthorizedSelector = function isAuthorizedSelector(state) {
@@ -1374,12 +1441,15 @@ function reducer() {
   switch (type) {
     case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
-      return state.set('user', payload.user).set('loading', false);
+      return state.set('loading', false).set('user', payload.user);
 
     case SIGN_IN_ERROR:
     case SIGN_IN_ERROR:
       console.error(type, payload.error);
       return state.set('loading', false);
+
+    case SIGN_OUT_SUCCESS:
+      return new ReducerRecord();
 
     default:
       return state;
@@ -1394,24 +1464,24 @@ function reducer() {
  * Action Creators
  * */
 
-function signIn(_ref) {
-  var email = _ref.email,
-      password = _ref.password;
-
-  return function (dispatch) {
-    _app2.default.auth().signInWithEmailAndPassword(email, password).then(function (user) {
-      dispatch({
-        type: SIGN_IN_SUCCESS,
-        payload: { user: user }
-      });
-    }).catch(function (e) {
-      dispatch({
-        type: SIGN_IN_ERROR,
-        payload: { error: e }
-      });
-    });
+/*export function signIn({email, password}) {
+  return (dispatch) => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((user) => {
+	        dispatch({
+	          type: SIGN_IN_SUCCESS,
+	          payload: { user }
+	        });
+	    }).catch((e) => {
+			dispatch({
+	          type: SIGN_IN_ERROR,
+	          payload: { error: e }
+	        });
+      	});
   };
-}
+}*/
 
 /*export function signUp({email, password}) {
   return (dispatch) => {
@@ -1431,116 +1501,228 @@ function signIn(_ref) {
       });
   };
 }*/
-function signUp(_ref2) {
-  var email = _ref2.email,
-      password = _ref2.password;
+function signUp(_ref) {
+  var email = _ref.email,
+      password = _ref.password;
 
   return {
     type: SIGN_UP_REQUEST,
     payload: { email: email, password: password }
   };
 }
+function signIn(_ref2) {
+  var email = _ref2.email,
+      password = _ref2.password;
+
+  return {
+    type: SIGN_IN_REQUEST,
+    payload: { email: email, password: password }
+  };
+}
+function signOut() {
+  console.log(0);
+  return {
+    type: SIGN_OUT_REQUEST
+  };
+}
 
 // Saga
 
-function signUpSaga() {
-  var auth, action, _action$payload, email, password, user;
-
-  return regeneratorRuntime.wrap(function signUpSaga$(_context) {
+function signOutSaga() {
+  var auth;
+  return regeneratorRuntime.wrap(function signOutSaga$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
+        case 0:
+          console.log('-- signOutSaga');
+          auth = _app2.default.auth();
+          _context.prev = 2;
+          _context.next = 5;
+          return (0, _effects.call)([auth, auth.signOut]);
+
+        case 5:
+          _context.next = 7;
+          return (0, _effects.put)({
+            type: SIGN_OUT_SUCCESS
+          });
+
+        case 7:
+          _context.next = 9;
+          return (0, _effects.put)((0, _reactRouterRedux.push)('/auth/signin'));
+
+        case 9:
+          _context.next = 14;
+          break;
+
+        case 11:
+          _context.prev = 11;
+          _context.t0 = _context['catch'](2);
+
+          (0, _effects.put)({
+            type: SIGN_OUT_ERROR,
+            payload: { error: _context.t0 }
+          });
+
+        case 14:
+        case 'end':
+          return _context.stop();
+      }
+    }
+  }, _marked, this, [[2, 11]]);
+}
+
+function signInSaga() {
+  var auth, action, _action$payload, email, password, user;
+
+  return regeneratorRuntime.wrap(function signInSaga$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
         case 0:
           auth = _app2.default.auth();
 
         case 1:
           if (false) {}
 
-          _context.next = 4;
+          _context2.next = 4;
+          return (0, _effects.take)(SIGN_IN_REQUEST);
+
+        case 4:
+          action = _context2.sent;
+          _action$payload = action.payload, email = _action$payload.email, password = _action$payload.password;
+          _context2.prev = 6;
+          _context2.next = 9;
+          return (0, _effects.call)([auth, auth.signInWithEmailAndPassword], email, password);
+
+        case 9:
+          user = _context2.sent;
+          _context2.next = 12;
+          return (0, _effects.put)({
+            type: SIGN_IN_SUCCESS,
+            payload: { user: user.user || user }
+          });
+
+        case 12:
+          _context2.next = 14;
+          return (0, _effects.put)((0, _reactRouterRedux.push)('/auth/signup'));
+
+        case 14:
+          _context2.next = 20;
+          break;
+
+        case 16:
+          _context2.prev = 16;
+          _context2.t0 = _context2['catch'](6);
+          _context2.next = 20;
+          return (0, _effects.put)({
+            type: SIGN_IN_ERROR,
+            payload: { error: _context2.t0 }
+          });
+
+        case 20:
+          _context2.next = 1;
+          break;
+
+        case 22:
+        case 'end':
+          return _context2.stop();
+      }
+    }
+  }, _marked2, this, [[6, 16]]);
+}
+
+function signUpSaga() {
+  var auth, action, _action$payload2, email, password, user;
+
+  return regeneratorRuntime.wrap(function signUpSaga$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          console.log('-- signUpSaga');
+          auth = _app2.default.auth();
+          //while(true){
+
+          _context3.next = 4;
           return (0, _effects.take)(SIGN_UP_REQUEST);
 
         case 4:
-          action = _context.sent;
-          _action$payload = action.payload, email = _action$payload.email, password = _action$payload.password;
-          _context.prev = 6;
-          _context.next = 9;
+          action = _context3.sent;
+          _action$payload2 = action.payload, email = _action$payload2.email, password = _action$payload2.password;
+          _context3.prev = 6;
+          _context3.next = 9;
           return (0, _effects.call)([auth, auth.createUserWithEmailAndPassword], email, password);
 
         case 9:
-          user = _context.sent;
-          _context.next = 12;
+          user = _context3.sent;
+          _context3.next = 12;
           return (0, _effects.put)({
             type: SIGN_UP_SUCCESS,
             payload: { user: user }
           });
 
         case 12:
-          _context.next = 18;
+          _context3.next = 18;
           break;
 
         case 14:
-          _context.prev = 14;
-          _context.t0 = _context['catch'](6);
-          _context.next = 18;
+          _context3.prev = 14;
+          _context3.t0 = _context3['catch'](6);
+          _context3.next = 18;
           return (0, _effects.put)({
             type: SIGN_UP_ERROR,
-            payload: { error: _context.t0 }
+            payload: { error: _context3.t0 }
           });
 
         case 18:
-          _context.next = 1;
-          break;
-
-        case 20:
         case 'end':
-          return _context.stop();
+          return _context3.stop();
       }
     }
-  }, _marked, this, [[6, 14]]);
+  }, _marked3, this, [[6, 14]]);
 }
 
 var watchStatusChange = /*#__PURE__*/exports.watchStatusChange = regeneratorRuntime.mark(function watchStatusChange() {
   var auth;
-  return regeneratorRuntime.wrap(function watchStatusChange$(_context2) {
+  return regeneratorRuntime.wrap(function watchStatusChange$(_context4) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
           auth = _app2.default.auth();
-          _context2.prev = 1;
-          _context2.next = 4;
+          _context4.prev = 1;
+          _context4.next = 4;
           return (0, _effects.cps)([auth, auth.onAuthStateChanged]);
 
         case 4:
-          _context2.next = 10;
+          _context4.next = 10;
           break;
 
         case 6:
-          _context2.prev = 6;
-          _context2.t0 = _context2['catch'](1);
-          _context2.next = 10;
+          _context4.prev = 6;
+          _context4.t0 = _context4['catch'](1);
+          _context4.next = 10;
           return (0, _effects.put)({
             type: SIGN_IN_SUCCESS,
-            payload: { user: _context2.t0 }
+            payload: { user: _context4.t0 }
           });
 
         case 10:
         case 'end':
-          return _context2.stop();
+          return _context4.stop();
       }
     }
   }, watchStatusChange, this, [[1, 6]]);
 });
 
 var saga = /*#__PURE__*/exports.saga = regeneratorRuntime.mark(function saga() {
-  return regeneratorRuntime.wrap(function saga$(_context3) {
+  return regeneratorRuntime.wrap(function saga$(_context5) {
     while (1) {
-      switch (_context3.prev = _context3.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
-          _context3.next = 2;
-          return (0, _effects.all)([signUpSaga(), watchStatusChange()]);
+          _context5.next = 2;
+          return (0, _effects.all)([signUpSaga(), watchStatusChange(), signInSaga(), (0, _effects.takeEvery)(SIGN_OUT_REQUEST, signOutSaga)]);
 
         case 2:
         case 'end':
-          return _context3.stop();
+          return _context5.stop();
       }
     }
   }, saga, this);

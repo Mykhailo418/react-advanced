@@ -3,7 +3,9 @@ import {app_name} from '../firebase';
 import { Record } from 'immutable';
 import firebase from 'firebase/app';
 import { reset } from 'redux-form';
-import {put, call, take, all, cps} from 'redux-saga/effects';
+import {push} from 'react-router-redux'
+
+import {put, call, take, all, cps, takeEvery} from 'redux-saga/effects';
 
 // Constants
 export const moduleName = 'auth';
@@ -12,9 +14,15 @@ export const signInFormName = 'signIn';
 const prefix = `${app_name}/${moduleName}`;
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`;
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`;
+export const SIGN_OUT_SUCCESS = `${prefix}/SIGN_OUT_SUCCESS`;
+
 export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`;
+export const SIGN_IN_REQUEST = `${prefix}/SIGN_IN_REQUEST`;
+export const SIGN_OUT_REQUEST = `${prefix}/SIGN_OUT_REQUEST`;
+
 export const SIGN_IN_ERROR = `${prefix}/SIGN_IN_ERROR`;
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`;
+export const SIGN_OUT_ERROR = `${prefix}/SIGN_OUT_ERROR`;
 
 // Selectors
 export const isAuthorizedSelector = (state) => !!state[moduleName].user;
@@ -33,13 +41,16 @@ export default function reducer(state = new ReducerRecord(), action) {
   	case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
       	return state
-                .set('user', payload.user)
-                .set('loading', false);
+                .set('loading', false)
+                .set('user', payload.user);
 
     case SIGN_IN_ERROR:
     case SIGN_IN_ERROR:
     	console.error(type, payload.error);
     	return state.set('loading', false);
+
+    case SIGN_OUT_SUCCESS:
+      return new ReducerRecord();
 
     default:
       	return state;
@@ -54,7 +65,7 @@ export default function reducer(state = new ReducerRecord(), action) {
  * Action Creators
  * */
 
-export function signIn({email, password}) {
+/*export function signIn({email, password}) {
   return (dispatch) => {
     firebase
       .auth()
@@ -71,7 +82,7 @@ export function signIn({email, password}) {
 	        });
       	});
   };
-}
+}*/
 
 /*export function signUp({email, password}) {
   return (dispatch) => {
@@ -97,13 +108,63 @@ export function signUp({email, password}) {
     payload: {email, password}
   };
 }
+export function signIn({email, password}) {
+  return {
+    type: SIGN_IN_REQUEST,
+    payload: {email, password}
+  };
+}
+export function signOut() {
+   console.log(0);
+  return {
+    type: SIGN_OUT_REQUEST,
+  };
+}
 
 // Saga
 
-export function* signUpSaga(){
-  const auth = firebase.auth();
+export function* signOutSaga(){
+  console.log('-- signOutSaga');
+    const auth = firebase.auth();
+    try{
+      yield call([auth, auth.signOut]);
+      yield put({
+            type: SIGN_OUT_SUCCESS
+      });
+      yield put(push('/auth/signin'));
+    }catch(error){
+      put({
+        type: SIGN_OUT_ERROR,
+        payload: { error }
+      });
+    }
+}
 
-  while(true){
+export function* signInSaga(){
+    const auth = firebase.auth();
+    while(true){
+      const action = yield take(SIGN_IN_REQUEST);
+      const {email, password} = action.payload;
+      try{
+        const user = yield call([auth, auth.signInWithEmailAndPassword], email, password);
+        yield put({
+              type: SIGN_IN_SUCCESS,
+              payload: { user : user.user || user }
+        });
+        yield put(push('/auth/signup'));
+      }catch(error){
+        yield put({
+          type: SIGN_IN_ERROR,
+          payload: { error }
+        });
+      }
+    }
+}
+
+export function* signUpSaga(){
+  console.log('-- signUpSaga');
+  const auth = firebase.auth();
+  //while(true){
     const action = yield take(SIGN_UP_REQUEST);
     const {email, password} = action.payload;
     try{
@@ -119,7 +180,7 @@ export function* signUpSaga(){
       });
     }
 
-  }
+  //}
 }
 
 export const watchStatusChange = function * () {
@@ -137,7 +198,7 @@ export const watchStatusChange = function * () {
 }
 
 export const saga = function * () {
-    yield all([ signUpSaga(), watchStatusChange() ]);
+    yield all([ signUpSaga(), watchStatusChange(), signInSaga(), takeEvery(SIGN_OUT_REQUEST, signOutSaga) ]);
 }
 
 // Init
