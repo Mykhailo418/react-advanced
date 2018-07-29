@@ -38,6 +38,10 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action;
 
   switch (type) {
+    case SIGN_UP_REQUEST:
+    case SIGN_IN_REQUEST:
+        return state.set('loading', true);
+
   	case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
       	return state
@@ -45,7 +49,7 @@ export default function reducer(state = new ReducerRecord(), action) {
                 .set('user', payload.user);
 
     case SIGN_IN_ERROR:
-    case SIGN_IN_ERROR:
+    case SIGN_UP_ERROR:
     	console.error(type, payload.error);
     	return state.set('loading', false);
 

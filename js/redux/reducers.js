@@ -3,6 +3,7 @@ import { routerReducer as router } from 'react-router-redux';
 import {reducer as form} from 'redux-form';
 import authReducer, { moduleName as authModule } from '../widgets/auth';
 import peopleReducer, { moduleName as peopleModule, ADD_PERSON, formName } from '../widgets/people';
+import eventsReducer, { moduleName as eventsModule} from '../widgets/events';
 
 export default combineReducers({
 	router, 
@@ -19,4 +20,5 @@ export default combineReducers({
 	}), */
 	[authModule] : authReducer,
 	[peopleModule] : peopleReducer,
+	[eventsModule] : eventsReducer,
 });
