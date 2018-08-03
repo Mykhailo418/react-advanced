@@ -24,6 +24,7 @@
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^5.0.0-alpha.9",
     "react-select": "^1.2.1",
+    "react-virtualized": "^9.20.1",
     "redux": "^4.0.0",
     "redux-form": "^7.4.2",
     "redux-logger": "^3.0.6",
@@ -50,7 +51,18 @@
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "jest": "^23.4.1",
+    "jest-enzyme": "^6.0.2",
     "webpack": "^4.16.0",
     "webpack-cli": "^3.0.8"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "js/test/auth.test.js"
+    ],
+    "unmockedModulePathPatterns": [
+      "react",
+      "enzyme",
+      "jest-enzyme"
+    ]
   }
 }

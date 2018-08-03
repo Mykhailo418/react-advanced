@@ -14,3 +14,11 @@ export function convertsEventsDataResponse(obj, DataRecord){
 		})
 	);
 };
+
+export function convertsDataResponse(obj, DataRecord){
+	return new List(
+		Object.entries(obj).map(([id, data]) => {
+			return new DataRecord(data);
+		})
+	);
+};
