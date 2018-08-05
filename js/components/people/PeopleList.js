@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import { peopleListSelector, loadingSelector, getPeople } from '../../widgets/people';
 import Loading from '../common/Loading';
 import { List } from 'react-virtualized';
-import 'react-virtualized/styles.css'; 
 
-class PeopleList extends Component{
+export class PeopleList extends Component{
 	static proptypes = {
 		people:  PropTypes.any.isRequired,
+		loading: PropTypes.boolean,
+		getPeople: PropTypes.func
 	}
 
 	componentDidMount(){
@@ -31,12 +32,12 @@ class PeopleList extends Component{
 
 	rowRenderer = ({key, index, isScrolling, isVisible, style }) => {
 		const {people} = this.props;
-
 		return (
 			<Fragment  key={key}>
 				<div
 				  key={key}
 				  style={{'paddingBotton': '20px'}}
+				  className="test--people__item"
 				>
 				  <span>{people[index].id}</span> 
 				&#160;-  <span>{people[index].fname}</span> 
