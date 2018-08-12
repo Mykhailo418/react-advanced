@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {Route, NavLink, Switch, Link} from 'react-router-dom';
 import AddPersonForm from '../people/AddPersonForm';
@@ -19,6 +19,7 @@ class AdminPage extends Component{
 		const {match, user} = this.props;
 		let email_span = (user) ? <span className="float-right">{user.email}</span> : null;
 		return(
+			<Fragment>
 			<section>
 				{email_span}
 				<h1>Admin Page</h1>
@@ -58,6 +59,7 @@ class AdminPage extends Component{
 					<Route path={`${match.path}/people-events`} component={EventsPeoplePage} />
 				</Switch>
 			</section>
+			</Fragment>
 		);
 	}
 

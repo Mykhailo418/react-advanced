@@ -39,7 +39,7 @@ export default function reducer(state = new ReducerRecord(), action) {
 				return list.push(new PersonRecord({...payload}));
 			});
 
-		case GET_PEOPLE_SUCCESS: 
+		case GET_PEOPLE_SUCCESS:
 			return state.set('people', convertsDataResponse(payload, PersonRecord) );
 
 		default:
@@ -55,6 +55,12 @@ export const loadedSelector = createSelector(stateSelector,  (state) => state.lo
 export const peopleListSelector = createSelector(peopleSelector,  (people) => {
 	return people.valueSeq().toArray();
 });
+export const uidSelector = (_, props) => props.id;
+export const personSelector = createSelector(
+  stateSelector,
+  uidSelector,
+  (state, id) => state.people.find((person) => person.id === id)
+);
 
 
 // Action Creators

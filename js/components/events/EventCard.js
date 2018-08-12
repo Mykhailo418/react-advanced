@@ -27,7 +27,7 @@ class EventCard extends Component{
 
 const spec = {
   drop(props, monitor) {
-    console.log('---', 'person = ',  monitor.getItem().uid, 'event = ', props.event.uid);
+    console.log('---', 'person = ',  monitor.getItem().id, 'event = ', props.event.uid);
   }
 }
  const collect = (connect, monitor) => ({

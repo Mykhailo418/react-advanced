@@ -2,6 +2,7 @@ import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import PersonListDraggable from '../people/PersonListDraggable';
 import SelectedEvents from '../events/SelectedEvents';
+import CustomDragLayer from '../common/CustomDragLayer';
 
 class EventsPeoplePage extends Component{
 	render(){
@@ -16,6 +17,7 @@ class EventsPeoplePage extends Component{
             <SelectedEvents />
           </div>
         </div>
+        <CustomDragLayer />
 			</Fragment>
 		);
 	}
