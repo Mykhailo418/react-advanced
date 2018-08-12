@@ -4,6 +4,8 @@ import {Provider} from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router'
 import App from './App';
 import history from '../history';
+import { DragDropContextProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 class Root extends Component{
 	static propTypes = {
@@ -14,7 +16,9 @@ class Root extends Component{
 		return(
 			<Provider store={this.props.store}>
 				<ConnectedRouter history={history} >
-					<App />
+					<DragDropContextProvider backend={HTML5Backend}>
+						<App />
+					</DragDropContextProvider>
 				</ConnectedRouter>
 			</Provider>
 		);

@@ -2,6 +2,7 @@ import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { selectedEventsSelector } from '../../widgets/events';
+import EventCard from './EventCard';
 
 class SelectedEvents extends Component{
 	static proptypes = {
@@ -22,7 +23,7 @@ class SelectedEvents extends Component{
 		if(!selectedEvents.size) return <li>There are no selected events</li>
 		//console.log(selectedEvents.toJS());
 		return selectedEvents.valueSeq().toArray().map((event) => {
-			return <li key={event.uid}>{event.title}</li>;
+			return <EventCard key={event.uid} event={event} />;
 		});
 	}
 }

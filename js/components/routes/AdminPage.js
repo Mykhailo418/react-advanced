@@ -7,6 +7,7 @@ import { addPerson } from '../../widgets/people';
 import { moduleName as moduleAuthName } from '../../widgets/auth';
 import EventsPage from './EventsPage';
 import PeopleListPage from './PeopleListPage';
+import EventsPeoplePage from './EventsPeoplePage';
 
 class AdminPage extends Component{
 	static propTypes = {
@@ -40,15 +41,21 @@ class AdminPage extends Component{
 					    </li>
 					    <li className="nav-item">
 						   	<NavLink to={`${match.path}/people`} activeClassName="active" className="nav-link">
-								People
-							</NavLink>
+									People
+								</NavLink>
 					    </li>
+							<li className="nav-item">
+								 <NavLink to={`${match.path}/people-events`} activeClassName="active" className="nav-link">
+								 	People/Events
+							 	</NavLink>
+							</li>
 				    </ul>
 				</nav>
 				<Switch>
 					<Route path={`${match.path}/add-person`} render={this.getAddPersonForm} />
 					<Route path={`${match.path}/events`} component={EventsPage} />
 					<Route path={`${match.path}/people`} component={PeopleListPage} />
+					<Route path={`${match.path}/people-events`} component={EventsPeoplePage} />
 				</Switch>
 			</section>
 		);

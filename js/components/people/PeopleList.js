@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { peopleListSelector, loadingSelector, getPeople } from '../../widgets/people';
 import Loading from '../common/Loading';
 import { List } from 'react-virtualized';
+import PersonCard from './PersonCard';
 
 export class PeopleList extends Component{
 	static proptypes = {
@@ -24,7 +25,7 @@ export class PeopleList extends Component{
 			    width={1000}
 			    height={1000}
 			    rowCount={people.length}
-			    rowHeight={40}
+			    rowHeight={100}
 			    rowRenderer={this.rowRenderer}
 			/>
 		);
@@ -33,18 +34,7 @@ export class PeopleList extends Component{
 	rowRenderer = ({key, index, isScrolling, isVisible, style }) => {
 		const {people} = this.props;
 		return (
-			<Fragment  key={key}>
-				<div
-				  key={key}
-				  style={style}
-				  className="test--people__item"
-				>
-				  <span>{people[index].id}</span> 
-				&#160;-  <span>{people[index].fname}</span> 
-				&#160;-  <span>{people[index].lname}</span> 
-				&#160;-  <span>{people[index].email}</span> 
-				</div>
-			</Fragment>
+			<PersonCard key={key} person={people[index]} style={style} className="test--people__item" />
 		);
 	}
 }
