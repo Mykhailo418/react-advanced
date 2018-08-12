@@ -18,11 +18,12 @@ class SelectedEvents extends Component{
 
 	outputEventsList = () => {
 		const {selectedEvents} = this.props;
-		console.log(selectedEvents, selectedEvents.length);
+		//console.log(selectedEvents, selectedEvents.length);
 		if(!selectedEvents.size) return <li>There are no selected events</li>
-		return selectedEvents.map((event) => {
-			return <li key={event.uid}>{event.title}</li>
-		})
+		//console.log(selectedEvents.toJS());
+		return selectedEvents.valueSeq().toArray().map((event) => {
+			return <li key={event.uid}>{event.title}</li>;
+		});
 	}
 }
 

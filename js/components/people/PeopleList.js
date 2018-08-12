@@ -24,7 +24,7 @@ export class PeopleList extends Component{
 			    width={1000}
 			    height={1000}
 			    rowCount={people.length}
-			    rowHeight={100}
+			    rowHeight={40}
 			    rowRenderer={this.rowRenderer}
 			/>
 		);
@@ -36,7 +36,7 @@ export class PeopleList extends Component{
 			<Fragment  key={key}>
 				<div
 				  key={key}
-				  style={{'paddingBotton': '20px'}}
+				  style={style}
 				  className="test--people__item"
 				>
 				  <span>{people[index].id}</span> 

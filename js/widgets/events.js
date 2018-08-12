@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import {app_name} from '../firebase';
-import { Record, List, OrderedSet } from 'immutable';
+import { Record, List, OrderedSet, OrderedMap } from 'immutable';
 import firebase from 'firebase';
 import {put, call, takeEvery, all, select, take} from 'redux-saga/effects';
 import { convertsEventsDataResponse } from '../utils';
@@ -15,7 +15,7 @@ export const GET_EVENTS_SUCCESS = `${prefix}/GET_EVENTS_SUCCESS`;
 export const SELECT_EVENT = `${prefix}/SELECT_EVENTS`;
 
 const ReducerRecord = Record({
-  events: new List([]),
+  events: new OrderedMap(),
   loading: false,
   loaded: false,
   selected: new OrderedSet([])
@@ -45,8 +45,7 @@ export default function reducer(store = new ReducerRecord([]), action){
 					.set('loaded',  Object.keys(payload).length < 10);
 
 		case SELECT_EVENT:
-			const {eventIndex} = payload;
-			const uid = store.events.get(eventIndex).get('uid');
+			const {uid} = payload;
 			return store.selected.contains(uid) ? 
 					store.update('selected', (selected) => {
 						return selected.remove(uid)
@@ -69,8 +68,8 @@ export const loadedSelector = createSelector(stateSelector,  (state) => state.lo
 export const eventsListSelector = createSelector(eventsSelector,  (events) => {
 	return events.valueSeq().toArray();
 });
-export const selectedEventsSelector = createSelector(stateSelector,  (state) => {
-	return state.events.filter((event)=> state.selected.contains(event.uid));
+export const selectedEventsSelector = createSelector(eventsSelector, stateSelector, (events, state) => {
+	return events.filter((event)=> state.selected.has(event.uid));
 });
 
 
@@ -81,10 +80,10 @@ export function getEvents(){
 	};
 }
 
-export function selectEvent(eventIndex){
+export function selectEvent(uid){
 	return {
 		type: SELECT_EVENT,
-		payload: {eventIndex}
+		payload: {uid}
 	};
 }
 

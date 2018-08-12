@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { eventsListSelector, loadingSelector, loadedSelector, getEvents, selectEvent } from '../../widgets/events';
 import Loading from '../common/Loading';
 import { Table, Column, InfiniteLoader } from 'react-virtualized';
-import 'react-virtualized/styles.css'; 
+import 'react-virtualized/styles.css';
 
 class VirtualizedEventsTable extends Component{
 	static propTypes = {
@@ -21,15 +21,13 @@ class VirtualizedEventsTable extends Component{
 
 	render(){
 		const {loading, events, loaded} = this.props;
-		console.log(loaded);
-		
 		return (
 			<InfiniteLoader
                 isRowLoaded={this.isRowLoaded}
-                rowCount={loaded ? events.length : events.length + 1}
                 loadMoreRows={this.loadMoreRows}
+                rowCount={loaded ? events.length : events.length + 1}
             >
-            	{({onRowsRendered, registerChild}) => (
+            	{ ({onRowsRendered, registerChild}) => (
 					<Table
 						ref={registerChild}
 				        rowCount={events.length}
@@ -53,12 +51,13 @@ class VirtualizedEventsTable extends Component{
 		);
 	}
 
-	isRowLoaded = ({ index }) => { 
-		return index < this.props.events.length; 
+	isRowLoaded = ({ index }) => {
+		//console.log('-- isRowLoaded =', index < this.props.events.length, index, this.props.events.length );
+		return index < this.props.events.length;
 	}
 
 	loadMoreRows = () => {
-        console.log('---', 'load more')
+        //console.log('--- loadMoreRows = ', 'load more')
         this.props.getEvents();
     }
 
@@ -66,10 +65,9 @@ class VirtualizedEventsTable extends Component{
 		return this.props.events[index];
 	}
 
-	rowSelect = event =>{
-		console.log(event);
-		const {selectEvent} = this.props;
-		selectEvent(event.index);
+	rowSelect = ({ rowData }) =>{
+		//console.log(event);
+		return this.props.selectEvent(rowData.uid);
 	}
 }
 
