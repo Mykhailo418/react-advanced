@@ -18,6 +18,10 @@ export const ADD_PERSON_ERROR = `${prefix}/ADD_PERSON_ERROR`;
 export const GET_PEOPLE_REQUEST = `${prefix}/GET_PEOPLE_REQUEST`;
 export const GET_PEOPLE_SUCCESS = `${prefix}/GET_PEOPLE_SUCCESS`;
 
+export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
+export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`;
+export const ADD_EVENT_ERROR = `${prefix}/ADD_EVENT_ERROR`;
+
 const ReducerRecord = Record({
   people: List([]),
   loading: false,
@@ -25,10 +29,12 @@ const ReducerRecord = Record({
 });
 
 const PersonRecord = Record({
+	uid: null,
 	id: null,
 	fname: null,
 	lname: null,
-	email: null
+	email: null,
+	events: List([])
 });
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -42,6 +48,18 @@ export default function reducer(state = new ReducerRecord(), action) {
 		case GET_PEOPLE_SUCCESS:
 			return state.set('people', convertsDataResponse(payload, PersonRecord) );
 
+		case ADD_EVENT_SUCCESS:
+			return state.update('people', (people) => {
+				return people.map((person) => {
+					if(person.get('id') == payload.personId){
+						return person.set('events', List( payload.events));
+					}
+					return person;
+				});
+			})
+
+		case ADD_EVENT_ERROR:
+			console.error(payload.error);
 		default:
 			return state;
 	}
@@ -88,15 +106,20 @@ export function getPeople(){
 	}
 }
 
+export function addEvents({eventId, personId}){
+	return {
+		type: ADD_EVENT_REQUEST,
+		payload: { eventId, personId }
+	}
+}
+
 // Saga
 export function* addPersonSaga (action) {
     const id = yield call(generateId);
-    console.log('-- Add person saga id = ', id);
     const person = {...action.payload, id};
     const ref = firebase.database().ref('people');
 
     const addPersonConst = yield call([ref, ref.push], person);
-    console.log('addPersonConst = ', addPersonConst);
     if(addPersonConst.key){
 	    yield put({
 	        type: ADD_PERSON,
@@ -115,22 +138,47 @@ export function* getPeopleSaga(action){
  	while (true) {
         yield take(GET_PEOPLE_REQUEST);
         const state = yield select(stateSelector);
-		const loaingState = yield select(loadingSelector);
-		const loadedState = yield select(loadedSelector);
+    		const loaingState = yield select(loadingSelector);
+    		const loadedState = yield select(loadedSelector);
 
-		if (loaingState || loadedState){ continue; }
+    		if (loaingState || loadedState){ continue; }
 
-		const ref = firebase.database().ref('people');
+    		const ref = firebase.database().ref('people');
 
-		const snapshot = yield call([ref, ref.once], 'value');
-		console.log('--load events', snapshot.val());
+    		const snapshot = yield call([ref, ref.once], 'value');
+    		yield put({
+    			type: GET_PEOPLE_SUCCESS,
+    			payload: snapshot.val()
+    		})
+    }
+}
+
+export function* addEventSaga(action){
+	const {eventId, personId} = action.payload;
+	const state = yield select(stateSelector);
+	const person = state.get('people').find((person) => person.get('id') === personId);
+	if(!person || person.events.includes(eventId)){ return};
+	const ref = firebase.database().ref(`people/${person.uid}/events`);
+    const events = person.get('events').toJS().concat(eventId);
+    try{
+    	yield call([ref, ref.set], events);
+
+    	yield put({
+    		type: ADD_EVENT_SUCCESS,
+    		payload: {personId, events}
+    	});
+    }catch(error){
 		yield put({
-			type: GET_PEOPLE_SUCCESS,
-			payload: snapshot.val()
-		})
+    		type: ADD_EVENT_ERROR,
+    		payload: {error}
+    	});
     }
 }
 
 export const saga = function * () {
-    yield all([takeEvery(ADD_PERSON_REQUEST, addPersonSaga), getPeopleSaga()])
+    yield all([
+    	takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
+    	getPeopleSaga(),
+    	takeEvery(ADD_EVENT_REQUEST, addEventSaga)
+    ])
 }

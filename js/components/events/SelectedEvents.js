@@ -30,7 +30,7 @@ class SelectedEvents extends Component{
 
 function mapToProps(state){
 	return {
-		selectedEvents: selectedEventsSelector(state)
+		selectedEvents: selectedEventsSelector(state),
 	}
 }
 

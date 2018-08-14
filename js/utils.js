@@ -14,7 +14,8 @@ export function convertsEventsDataResponse(values, DataRecord) {
 export function convertsDataResponse(obj, DataRecord){
 	return new List(
 		Object.entries(obj).map(([id, data]) => {
-			return new DataRecord(data);
+			const {events, ...rest} = data;
+			return new DataRecord({uid: id, events: List(events),...rest});
 		})
 	);
 };

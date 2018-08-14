@@ -28,7 +28,6 @@ class CustomDragLayer extends Component {
   }
 
   render() {
-    console.log('CustomDragLayer = ',this.props);
     const { isDragging } = this.props
     if (!isDragging || !this.previewItem) return null
 

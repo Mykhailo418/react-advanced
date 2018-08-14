@@ -8,7 +8,7 @@ const wrapper = (OriginalComponent, dragSettings) => {
   class DragDecorator extends Component{
 
       componentDidMount() {
-        console.log('  this.props.connectPreview',   this.props.connectPreview);
+        //console.log('  this.props.connectPreview',   this.props.connectPreview);
         this.props.connectPreview ? this.props.connectPreview(getEmptyImage()) : null;
       }
 
@@ -26,7 +26,7 @@ const wrapper = (OriginalComponent, dragSettings) => {
           );
       }
   }
-  console.log('spec = ',spec, 'collect = ', collect);
+  //console.log('spec = ',spec, 'collect = ', collect);
   return  DragSource(type, spec, collect)(DragDecorator);
 }
 
