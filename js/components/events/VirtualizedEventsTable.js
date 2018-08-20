@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { eventsListSelector, loadingSelector, loadedSelector, getEvents, selectEvent } from '../../widgets/events';
 import Loading from '../common/Loading';
 import { Table, Column, InfiniteLoader } from 'react-virtualized';
+import TableRow from './TableRow';
 import 'react-virtualized/styles.css';
 
 class VirtualizedEventsTable extends Component{
@@ -40,6 +41,7 @@ class VirtualizedEventsTable extends Component{
 				        headerHeight={50}
 				        overscanRowCount={5}
 				        onRowsRendered={onRowsRendered}
+								rowRenderer={this.rowRenderer}
 				      >
 				        <Column dataKey="title" width={200} label="name" />
 				        <Column dataKey="where" width={300} label="place" />
@@ -68,6 +70,11 @@ class VirtualizedEventsTable extends Component{
 	rowSelect = ({ rowData }) =>{
 		//console.log(event);
 		return this.props.selectEvent(rowData.uid);
+	}
+
+	rowRenderer = (props) => {
+		const {key, ...rest} = props;
+		return <TableRow key={key} {...rest} />
 	}
 }
 

@@ -157,7 +157,9 @@ export function* addEventSaga(action){
 	const {eventId, personId} = action.payload;
 	const state = yield select(stateSelector);
 	const person = state.get('people').find((person) => person.get('id') === personId);
-	if(!person || person.events.includes(eventId)){ return};
+
+	if(!person || person.events.includes(eventId)){ return };
+
 	const ref = firebase.database().ref(`people/${person.uid}/events`);
     const events = person.get('events').toJS().concat(eventId);
     try{
