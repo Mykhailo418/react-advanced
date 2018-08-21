@@ -12,6 +12,11 @@ const prefix = `${app_name}/${moduleName}`;
 export const GET_EVENTS_REQUEST = `${prefix}/GET_EVENTS_REQUEST`;
 export const GET_EVENTS_START = `${prefix}/GET_EVENTS_START`;
 export const GET_EVENTS_SUCCESS = `${prefix}/GET_EVENTS_SUCCESS`;
+
+export const REMOVE_EVENT_REQUEST = `${prefix}/REMOVE_EVENT_REQUEST`;
+export const REMOVE_EVENT_SUCCESS = `${prefix}/REMOVE_EVENT_SUCCESS`;
+export const REMOVE_EVENT_ERROR = `${prefix}/REMOVE_EVENT_ERROR`;
+
 export const SELECT_EVENT = `${prefix}/SELECT_EVENTS`;
 
 const ReducerRecord = Record({
@@ -46,7 +51,7 @@ export default function reducer(store = new ReducerRecord([]), action){
 
 		case SELECT_EVENT:
 			const {uid} = payload;
-			return store.selected.contains(uid) ? 
+			return store.selected.contains(uid) ?
 					store.update('selected', (selected) => {
 						return selected.remove(uid)
 					})  :
@@ -54,7 +59,14 @@ export default function reducer(store = new ReducerRecord([]), action){
 						return selected.add(uid)
 					});
 
-		default: 
+    case REMOVE_EVENT_SUCCESS:
+      return store
+              .removeIn(['events', payload.uid])
+              .update('selected', (selected) => {
+    						return selected.remove(payload.uid)
+    					});
+
+		default:
 			return store;
 	}
 }
@@ -87,6 +99,13 @@ export function selectEvent(uid){
 	};
 }
 
+export function removeEvent(uid){
+  return {
+    type: REMOVE_EVENT_REQUEST,
+    payload: {uid}
+  }
+}
+
 // Saga
 export function* getEventsSaga(action){
 	 while (true) {
@@ -116,6 +135,27 @@ export function* getEventsSaga(action){
 	}
 }
 
+export function* removeEventSaga(action){
+    const {uid} = action.payload;
+    const ref = firebase.database().ref(`events/${uid}`);
+
+    try{
+      yield call([ref, ref.remove]);
+      yield put({
+    		type: REMOVE_EVENT_SUCCESS,
+    		payload: {uid}
+    	});
+    }catch(e){
+      yield put({
+  			type: REMOVE_EVENT_ERROR,
+  			payload: snapshot.val()
+  		})
+    }
+}
+
 export const saga = function* (){
-    yield all([getEventsSaga()]);
+    yield all([
+      getEventsSaga(),
+      takeEvery(REMOVE_EVENT_REQUEST, removeEventSaga)
+    ]);
 }

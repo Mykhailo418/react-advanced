@@ -19,3 +19,13 @@ export function convertsDataResponse(obj, DataRecord){
 		})
 	);
 };
+
+export function convertsPeopleToRequest(people, DataRecord){
+	let result = {};
+	let peopleJs = people.toJS();
+	peopleJs.forEach((person,i) => {
+			const {uid, ...rest} = person;
+			result[person.uid] = rest;
+	});
+	return result;
+};

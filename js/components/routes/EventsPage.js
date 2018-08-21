@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import EventsTable from '../events/EventsTable';
 import SelectedEvents from '../events/SelectedEvents';
 import VirtualizedEventsTable from '../events/VirtualizedEventsTable';
+import Trash from '../common/Trash';
 
 class EventsPage extends Component{
 	render(){
@@ -14,6 +15,7 @@ class EventsPage extends Component{
 						<VirtualizedEventsTable />
 					</div>
 					<div className="col-sm">
+						<Trash />
 						<SelectedEvents />
 					</div>
 				</div>

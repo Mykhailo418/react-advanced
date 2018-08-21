@@ -2,21 +2,27 @@ import React, {Component} from 'react';
 import { DropTarget } from 'react-dnd';
 import { type as eventRowType } from '../events/TableRow';
 
-const componentStyle = {
+let componentStyle = {
   fontSize: '3em'
 }
 
 class Trash extends Component {
 	 render(){
+     const {canDrop, hovered, connectDropTarget} = this.props;
+     const color = canDrop ? (hovered ? 'red' : 'green') : 'black';
+     console.log(eventRowType);
      return (
-        <span style={componentStyle} class="glyphicon glyphicon-trash"></span>
+        connectDropTarget(
+            <i style={{color ,...componentStyle}} className="fa fa-trash-o"></i>
+        )
      );
    }
 }
 
 const spec = {
   drop(props, monitor) {
-    console.log(props, monitor);
+    console.log('DROP:',props, monitor.getItem());
+    return monitor.getItem();
   }
 }
 

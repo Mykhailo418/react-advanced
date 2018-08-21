@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import dragDecoratorWrapper from '../common/decorators/DragDecorator';
+import {removeEvent} from '../../widgets/events';
+import { connect } from 'react-redux';
 
 /**
  * Default row renderer for Table.
@@ -75,12 +77,17 @@ export const type = 'eventRow';
 const spec = {
   beginDrag(props) {
     console.log('beginDrag TableRow', props);
+    const {rowData} = props;
     return {
+      eventId: rowData && rowData.get('uid')
     }
   },
   endDrag(props, monitor) {
+    const {removeEvent} = props;
     const dropRes = monitor.getDropResult()
-    console.log('---', 'TableRow', dropRes)
+    const {eventId} = dropRes;
+    if(eventId) removeEvent(eventId);
+    console.log('--- endDrag', 'TableRow', dropRes)
   }
 };
 
@@ -89,4 +96,4 @@ const collect = (connect, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-export default dragDecoratorWrapper(TableRow, {type, spec, collect});
+export default connect(null, {removeEvent})(dragDecoratorWrapper(TableRow, {type, spec, collect}));

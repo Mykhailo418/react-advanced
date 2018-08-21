@@ -6,7 +6,8 @@ import {put, call, takeEvery, select, all, take} from 'redux-saga/effects';
 import {generateId} from '../utils';
 import { reset } from 'redux-form';
 import { createSelector } from 'reselect';
-import { convertsDataResponse } from '../utils';
+import { convertsDataResponse, convertsPeopleToRequest } from '../utils';
+import {REMOVE_EVENT_SUCCESS} from './events';
 
 // Constants
 export const moduleName = 'people';
@@ -17,10 +18,12 @@ export const ADD_PERSON = `${prefix}/ADD_PERSON`;
 export const ADD_PERSON_ERROR = `${prefix}/ADD_PERSON_ERROR`;
 export const GET_PEOPLE_REQUEST = `${prefix}/GET_PEOPLE_REQUEST`;
 export const GET_PEOPLE_SUCCESS = `${prefix}/GET_PEOPLE_SUCCESS`;
+export const UPDATE_PEOPLE_SUCCESS = `${prefix}/UPDATE_PEOPLE_SUCCESS`;
 
 export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
 export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`;
 export const ADD_EVENT_ERROR = `${prefix}/ADD_EVENT_ERROR`;
+
 
 const ReducerRecord = Record({
   people: List([]),
@@ -57,6 +60,9 @@ export default function reducer(state = new ReducerRecord(), action) {
 					return person;
 				});
 			})
+
+    case UPDATE_PEOPLE_SUCCESS:
+      return state.set('people', payload.people);
 
 		case ADD_EVENT_ERROR:
 			console.error(payload.error);
@@ -160,7 +166,7 @@ export function* addEventSaga(action){
 
 	if(!person || person.events.includes(eventId)){ return };
 
-	const ref = firebase.database().ref(`people/${person.uid}/events`);
+	  const ref = firebase.database().ref(`people/${person.uid}/events`);
     const events = person.get('events').toJS().concat(eventId);
     try{
     	yield call([ref, ref.set], events);
@@ -177,10 +183,32 @@ export function* addEventSaga(action){
     }
 }
 
+export function* removeEventSaga(action){
+     const {uid} = action.payload;
+     const state = yield select(stateSelector);
+     const peopleUpdated = state.get('people').map((person) => {
+       return person.update('events',(events) => {
+         return events.filter((event) => event != uid);
+       });
+     });
+     const ref = firebase.database().ref('people');
+     try{
+       yield call([ref, ref.update], convertsPeopleToRequest(peopleUpdated));
+
+       yield put({
+          type: UPDATE_PEOPLE_SUCCESS,
+          payload: {people: peopleUpdated}
+       })
+     }catch(e){
+       console.error(e);
+     }
+}
+
 export const saga = function * () {
     yield all([
     	takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     	getPeopleSaga(),
-    	takeEvery(ADD_EVENT_REQUEST, addEventSaga)
+    	takeEvery(ADD_EVENT_REQUEST, addEventSaga),
+      takeEvery(REMOVE_EVENT_SUCCESS, removeEventSaga)
     ])
 }
