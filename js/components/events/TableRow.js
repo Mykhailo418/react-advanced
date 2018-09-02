@@ -84,10 +84,12 @@ const spec = {
   },
   endDrag(props, monitor) {
     const {removeEvent} = props;
-    const dropRes = monitor.getDropResult()
-    const {eventId} = dropRes;
-    if(eventId) removeEvent(eventId);
-    console.log('--- endDrag', 'TableRow', dropRes)
+    const dropRes = monitor.getDropResult();
+    if(dropRes){
+      const {eventId} = dropRes;
+      if(eventId) removeEvent(eventId);
+      console.log('--- endDrag', 'TableRow', dropRes);
+    }
   }
 };
 

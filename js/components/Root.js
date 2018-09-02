@@ -15,11 +15,11 @@ class Root extends Component{
 	render(){
 		return(
 			<Provider store={this.props.store}>
-				<ConnectedRouter history={history} >
-					<DragDropContextProvider backend={HTML5Backend}>
+				<DragDropContextProvider backend={HTML5Backend}>
+					<ConnectedRouter history={history} >
 						<App />
-					</DragDropContextProvider>
-				</ConnectedRouter>
+						</ConnectedRouter>
+				</DragDropContextProvider>
 			</Provider>
 		);
 	}

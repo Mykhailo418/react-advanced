@@ -2,7 +2,8 @@ import 'regenerator-runtime/runtime';
 import firebase from 'firebase';
 import {app_name} from '../firebase';
 import { Record, List } from 'immutable';
-import {put, call, takeEvery, select, all, take} from 'redux-saga/effects';
+import {put, call, takeEvery, select, all, take, fork, cancel, spawn, cancelled} from 'redux-saga/effects';
+import { delay, eventChannel } from 'redux-saga';
 import {generateId} from '../utils';
 import { reset } from 'redux-form';
 import { createSelector } from 'reselect';
@@ -149,14 +150,19 @@ export function* getPeopleSaga(action){
 
     		if (loaingState || loadedState){ continue; }
 
-    		const ref = firebase.database().ref('people');
-
-    		const snapshot = yield call([ref, ref.once], 'value');
-    		yield put({
-    			type: GET_PEOPLE_SUCCESS,
-    			payload: snapshot.val()
-    		})
+    	yield call(fetchPeopleSaga);
     }
+}
+
+export function* fetchPeopleSaga(){
+  const ref = firebase.database().ref('people');
+
+  const snapshot = yield call([ref, ref.once], 'value');
+  //console.log(snapshot.val());
+  yield put({
+    type: GET_PEOPLE_SUCCESS,
+    payload: snapshot.val()
+  })
 }
 
 export function* addEventSaga(action){
@@ -171,10 +177,11 @@ export function* addEventSaga(action){
     try{
     	yield call([ref, ref.set], events);
 
-    	yield put({
-    		type: ADD_EVENT_SUCCESS,
-    		payload: {personId, events}
-    	});
+    	// yield put({
+    	// 	type: ADD_EVENT_SUCCESS,
+    	// 	payload: {personId, events}
+    	// });
+      yield put({type: GET_PEOPLE_REQUEST});
     }catch(error){
 		yield put({
     		type: ADD_EVENT_ERROR,
@@ -204,7 +211,25 @@ export function* removeEventSaga(action){
      }
 }
 
+export function* cancelablePeopleSyncSaga(){
+    const process = yield fork(syncPeopleSaga);
+    yield delay(6000);
+    yield cancel(process);
+}
+
+export function* syncPeopleSaga(){
+  try{
+    while(true){
+      yield call(fetchPeopleSaga);
+      yield delay(2000);
+    }
+  } finally{
+        if (yield cancelled()) console.log('---', 'syncPeopleSaga was canceled')
+  }
+}
+
 export const saga = function * () {
+    yield spawn(cancelablePeopleSyncSaga);
     yield all([
     	takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     	getPeopleSaga(),
