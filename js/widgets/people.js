@@ -158,7 +158,7 @@ export function* fetchPeopleSaga(){
   const ref = firebase.database().ref('people');
 
   const snapshot = yield call([ref, ref.once], 'value');
-  //console.log(snapshot.val());
+  console.log(snapshot.val());
   yield put({
     type: GET_PEOPLE_SUCCESS,
     payload: snapshot.val()
@@ -211,12 +211,14 @@ export function* removeEventSaga(action){
      }
 }
 
+// Cancelable Saga
 export function* cancelablePeopleSyncSaga(){
     const process = yield fork(syncPeopleSaga);
     yield delay(6000);
     yield cancel(process);
 }
 
+// Background Loading People
 export function* syncPeopleSaga(){
   try{
     while(true){
@@ -228,8 +230,35 @@ export function* syncPeopleSaga(){
   }
 }
 
+// Create Event Channel
+export const createEventChannel = () => {
+  return eventChannel((emit) => {
+    const callback = (data) => {
+      return emit({data});
+    }
+    const ref = firebase.database().ref('people');
+
+    ref.on('value', callback);
+
+    return () => ref.off('value', callback);
+  })
+}
+
+// Real Time
+export function* realtimeSyncSaga(){
+  const channel = yield call(createEventChannel);
+  while(true){
+    const { data } = yield take(channel);
+    console.log('realtimeSyncSaga', data);
+    yield put({
+      type: GET_PEOPLE_SUCCESS,
+      payload: data.val()
+    })
+  }
+}
+
 export const saga = function * () {
-    yield spawn(cancelablePeopleSyncSaga);
+    yield spawn(realtimeSyncSaga);
     yield all([
     	takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     	getPeopleSaga(),
