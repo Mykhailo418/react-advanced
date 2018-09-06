@@ -4,8 +4,9 @@ import { Record } from 'immutable';
 import firebase from 'firebase/app';
 import { reset } from 'redux-form';
 import {push} from 'react-router-redux';
+import { eventChannel } from 'redux-saga';
 
-import {put, call, take, all, cps, takeEvery} from 'redux-saga/effects';
+import {put, call, take, all, cps, takeEvery, spawn} from 'redux-saga/effects';
 
 // Constants
 export const moduleName = 'auth';
@@ -197,11 +198,36 @@ export const watchStatusChange = function * () {
             payload: {user}
         });
     }
+}
 
+export const createAuthChannel = () => {
+  return eventChannel((emit) => {
+    const callback = (user) => {
+      return emit({user});
+    }
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged(callback);
+
+    return () => null;
+  })
+}
+
+export function* realtimeAuthSyncSaga(){
+  const channel = yield call(createAuthChannel);
+    const { user } = yield take(channel);
+    console.log('realtimeAuthSyncSaga', user);
+    if(user){
+      yield put({
+          type: SIGN_IN_SUCCESS,
+          payload: {user}
+      });
+    }
 }
 
 export const saga = function * () {
-    yield all([ signUpSaga(), watchStatusChange(), signInSaga(), takeEvery(SIGN_OUT_REQUEST, signOutSaga) ]);
+    yield spawn(realtimeAuthSyncSaga);
+    yield all([ signUpSaga(), signInSaga(), takeEvery(SIGN_OUT_REQUEST, signOutSaga) ]);
 }
 
 // Init
