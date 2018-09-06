@@ -7,7 +7,7 @@ import createSagaMiddleware from 'redux-saga';
 import saga from './saga';
 
 const sagaMiddleware = createSagaMiddleware();
-const enhancer = applyMiddleware(sagaMiddleware, routerMiddleware(history));
+const enhancer = applyMiddleware(sagaMiddleware, routerMiddleware(history), logger);
 
 const store = createStore(connectRouter(history)(reducers), enhancer);
 

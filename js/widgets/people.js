@@ -11,6 +11,7 @@ import { convertsDataResponse, convertsPeopleToRequest } from '../utils';
 import {REMOVE_EVENT_SUCCESS} from './events';
 
 // Constants
+export const LOCATION_CHANGE ='@@router/LOCATION_CHANGE';
 export const moduleName = 'people';
 export const formName = 'people';
 const prefix = `${app_name}/${moduleName}`;
@@ -211,6 +212,22 @@ export function* removeEventSaga(action){
      }
 }
 
+export function* addPeopleChannel(){
+    let channel;
+    while (true) {
+        const  action = yield take(LOCATION_CHANGE);
+        const {payload} = action;
+        //console.log(payload.location.pathname == "/admin/people", !channel, payload.location.pathname);
+        if(payload.location.pathname == "/admin/people" && !channel){
+          console.log('create channel');
+          channel = yield fork(realtimeSyncSaga);
+        }else if(channel){
+          yield cancel(channel);
+          channel = null;
+        }
+    }
+}
+
 // Cancelable Saga
 export function* cancelablePeopleSyncSaga(){
     const process = yield fork(syncPeopleSaga);
@@ -257,8 +274,10 @@ export function* realtimeSyncSaga(){
   }
 }
 
-export const saga = function * () {
-    yield spawn(realtimeSyncSaga);
+export const saga = function* () {
+    //yield spawn(realtimeSyncSaga);
+    yield spawn(addPeopleChannel);
+
     yield all([
     	takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     	getPeopleSaga(),
