@@ -266,7 +266,7 @@ export function* realtimeSyncSaga(){
   const channel = yield call(createEventChannel);
   while(true){
     const { data } = yield take(channel);
-    console.log('realtimeSyncSaga', data);
+    console.log('realtimeSyncSaga', data.val());
     yield put({
       type: GET_PEOPLE_SUCCESS,
       payload: data.val()

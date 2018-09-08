@@ -7,17 +7,10 @@ class PersonCard extends Component{
     style: PropTypes.object
 	}
 
-  componentStyle = {
-    display: 'inline-block',
-    width: 'auto',
-    margin: '0 20px 10px 0',
-    position: 'static'
-  }
-
 	render(){
-    const {person,  style} = this.props;
+    const {person} = this.props;
 		return(
-			<div className="person-card" style={{...style, ...this.componentStyle}}>
+			<div className="person-card">
         <h5>{`${person.fname} ${person.lname}`}</h5>
         <ul>
           <li><strong>ID:</strong> {person.id}</li>
