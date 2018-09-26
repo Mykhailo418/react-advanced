@@ -207,9 +207,7 @@ export const createAuthChannel = () => {
     }
     const auth = firebase.auth();
 
-    auth.onAuthStateChanged(callback);
-
-    return () => null;
+    return auth.onAuthStateChanged(callback);
   })
 }
 
