@@ -1,19 +1,31 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import {StepperContext} from './Stepper';
 
-class Step extends Component{
+class Step extends PureComponent{
     static propTypes = {
       stage: PropTypes.number,
       handleClick: PropTypes.func
     }
 
     render(){
-      const {stage, handleClick} = this.props;
+      console.log('STEP RENDER', this.props.stage);
       return (
-        <a href="#" className="list-group-item list-group-item-action" onClick={handleClick(stage)}>
+        <StepperContext.Consumer>
+          {value => this.getLink(value)}
+        </StepperContext.Consumer>
+      );
+    }
+
+    getLink = currentStage => {
+      const {stage, handleClick} = this.props;
+      let classes = 'list-group-item list-group-item-action';
+      if(currentStage === stage) classes += ' active';
+      return (
+          <a href="#" className={classes} onClick={handleClick(stage)}>
           {stage}
         </a>
-      );
+      )
     }
 }
 

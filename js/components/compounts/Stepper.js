@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+export const StepperContext = React.createContext();
 
-class CustomComponent extends Component{
+class Stepper extends Component{
     static propTypes = {}
+    state = {
+      stage: 1
+    }
 
     render(){
       return (
         <div className="list-group">
-          {this.getChildlren()}
+          <StepperContext.Provider value={this.state.stage}>
+            {this.getChildlren()}
+          </StepperContext.Provider>
         </div>
       );
     }
@@ -20,8 +26,8 @@ class CustomComponent extends Component{
 
     stepHandleClick = stage => e => {
       e.preventDefault();
-      console.log('Stage: ', stage)
+      this.setState({stage});
     }
 }
 
-export default CustomComponent;
+export default Stepper;
