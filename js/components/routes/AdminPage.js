@@ -8,6 +8,7 @@ import { moduleName as moduleAuthName } from '../../widgets/auth';
 import EventsPage from './EventsPage';
 import PeopleListPage from './PeopleListPage';
 import EventsPeoplePage from './EventsPeoplePage';
+import CompoundComponentsPage from './CompoundComponentsPage';
 
 class AdminPage extends Component{
 	static propTypes = {
@@ -50,6 +51,11 @@ class AdminPage extends Component{
 								 	People/Events
 							 	</NavLink>
 							</li>
+							<li className="nav-item">
+								<NavLink to={`${match.path}/compound_components`} activeClassName="active" className="nav-link">
+									Compound Components
+								</NavLink>
+							</li>
 				    </ul>
 				</nav>
 				<Switch>
@@ -57,6 +63,7 @@ class AdminPage extends Component{
 					<Route path={`${match.path}/events`} component={EventsPage} />
 					<Route path={`${match.path}/people`} component={PeopleListPage} />
 					<Route path={`${match.path}/people-events`} component={EventsPeoplePage} />
+					<Route path={`${match.path}/compound_components`} component={CompoundComponentsPage} />
 				</Switch>
 			</section>
 			</Fragment>

@@ -18,7 +18,7 @@ class AuthPage extends Component{
 		let email_span = (user) ? <span className="float-right">{user.email}</span> : null;
 		let signInOut = (user) ? <a href="#" className="nav-link" onClick={this.signOutClick}>
 									Sign Out
-								</a> : 
+								</a> :
 								<NavLink to={`${match.path}/signin`} activeClassName="active" className="nav-link">
 									Sign In
 								</NavLink>
@@ -35,10 +35,10 @@ class AuthPage extends Component{
 					    <Fragment>
 					       	<li className="nav-item">
 						       	<NavLink to={`${match.path}/signup`} activeClassName="active" className="nav-link">
-									Sign Up
-								</NavLink>
+											Sign Up
+										</NavLink>
 					       	</li>
-					       	 <li className="nav-item">
+					       	<li className="nav-item">
 						      {signInOut}
 					       	</li>
 					       	{admin_page}

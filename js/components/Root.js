@@ -18,7 +18,7 @@ class Root extends Component{
 				<DragDropContextProvider backend={HTML5Backend}>
 					<ConnectedRouter history={history} >
 						<App />
-						</ConnectedRouter>
+					</ConnectedRouter>
 				</DragDropContextProvider>
 			</Provider>
 		);
