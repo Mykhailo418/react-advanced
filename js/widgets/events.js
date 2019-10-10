@@ -77,11 +77,12 @@ export const stateSelector = (state) => state[moduleName];
 export const eventsSelector = createSelector(stateSelector,  (state) => state.events);
 export const loadingSelector = createSelector(stateSelector,  (state) => state.loading);
 export const loadedSelector = createSelector(stateSelector,  (state) => state.loaded);
+export const selectedSelector = createSelector(stateSelector,  (state) => state.selected);
 export const eventsListSelector = createSelector(eventsSelector,  (events) => {
 	return events.valueSeq().toArray();
 });
-export const selectedEventsSelector = createSelector(eventsSelector, stateSelector, (events, state) => {
-	return events.filter((event)=> state.selected.has(event.uid));
+export const selectedEventsSelector = createSelector(eventsSelector, selectedSelector, (events, selected) => {
+	return events.filter((event) => selected.has(event.uid));
 });
 
 
